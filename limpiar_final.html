@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Limpiador Final - Tekams</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #218838; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; max-height: 300px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpiador Final - Tekams</h1>
+        <p>Esto corregirá "option" → "monthly" en todas las claves de localStorage</p>
+
+        <div id="status"></div>
+
+        <button onclick="limpiarTodo()">🚀 LIMPIAR TODO AHORA</button>
+
+        <hr>
+        <h3>Resultado:</h3>
+        <pre id="resultado">Esperando acción...</pre>
+    </div>
+
+    <script>
+        function msg(texto, tipo = 'info') {
+            const div = document.getElementById('status');
+            div.className = 'status ' + tipo;
+            div.textContent = texto;
+        }
+
+        function limpiarTodo() {
+            try {
+                let totalCorregidas = 0;
+
+                // Claves a limpiar
+                const claves = ['tkm9_d', 'tekams_autosave'];
+
+                claves.forEach(clave => {
+                    const datos = localStorage.getItem(clave);
+                    if (datos) {
+                        try {
+                            const obj = JSON.parse(datos);
+                            const str = JSON.stringify(obj);
+
+                            if (str.includes('recurrent":"option')) {
+                                // Limpiar recursivamente
+                                const limpio = limpiarObjeto(obj);
+                                localStorage.setItem(clave, JSON.stringify(limpio));
+
+                                // Contar cambios
+                                const cambios = (str.match(/recurrent":"option/g) || []).length;
+                                totalCorregidas += cambios;
+
+                                document.getElementById('resultado').textContent +=
+                                    `✓ [${clave}] - ${cambios} tareas corregidas\n`;
+                            }
+                        } catch (e) {
+                            console.error('Error en ' + clave, e);
+                        }
+                    }
+                });
+
+                if (totalCorregidas > 0) {
+                    msg(`✅ LISTO! Se corrigieron ${totalCorregidas} tareas. Recarga Tekams ahora.`, 'success');
+                    document.getElementById('resultado').textContent +=
+                        `\n\n✅ Total: ${totalCorregidas} tareas corregidas\nRecarga Tekams para ver los cambios`;
+                } else {
+                    msg('ℹ️ No se encontraron datos con "option"', 'info');
+                    document.getElementById('resultado').textContent = 'Los datos ya están limpios';
+                }
+            } catch (e) {
+                msg('❌ Error: ' + e.message, 'error');
+                document.getElementById('resultado').textContent = e.message;
+            }
+        }
+
+        function limpiarObjeto(obj) {
+            if (Array.isArray(obj)) {
+                return obj.map(item => limpiarObjeto(item));
+            } else if (obj !== null && typeof obj === 'object') {
+                const resultado = {};
+                for (const key in obj) {
+                    if (key === 'recurrent' && obj[key] === 'option') {
+                        resultado[key] = 'monthly';
+                    } else {
+                        resultado[key] = limpiarObjeto(obj[key]);
+                    }
+                }
+                return resultado;
+            }
+            return obj;
+        }
+    </script>
+</body>
+</html>

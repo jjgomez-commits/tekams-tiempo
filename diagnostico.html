@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnóstico - Tekams</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #4ec9b0; }
+        pre { background: #2d2d2d; padding: 15px; border-radius: 4px; overflow-x: auto; border-left: 3px solid #007acc; }
+        .section { margin: 20px 0; }
+        .key { color: #9cdcfe; }
+        .value { color: #ce9178; }
+        button { padding: 8px 15px; background: #007acc; color: white; border: none; border-radius: 3px; cursor: pointer; margin: 5px; }
+        button:hover { background: #005a9e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico localStorage - Tekams</h1>
+
+        <div class="section">
+            <h2>Todas las claves en localStorage:</h2>
+            <pre id="keys"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Contenido de cada clave:</h2>
+            <pre id="content"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Búsqueda de "option" en todos los datos:</h2>
+            <pre id="search"></pre>
+        </div>
+
+        <button onclick="location.reload()">Actualizar</button>
+    </div>
+
+    <script>
+        // Mostrar todas las claves
+        let output = '';
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            output += key + '\n';
+        }
+        document.getElementById('keys').textContent = output || '(sin claves)';
+
+        // Mostrar contenido
+        output = '';
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const val = localStorage.getItem(key);
+            output += `\n[${key}]\n`;
+            try {
+                const obj = JSON.parse(val);
+                output += JSON.stringify(obj, null, 2).substring(0, 500) + '...\n';
+            } catch (e) {
+                output += val.substring(0, 500) + '...\n';
+            }
+        }
+        document.getElementById('content').textContent = output || '(vacío)';
+
+        // Buscar "option"
+        output = '';
+        let found = false;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const val = localStorage.getItem(key);
+            if (val.includes('option')) {
+                output += `Encontrado en [${key}]\n`;
+                found = true;
+            }
+        }
+        document.getElementById('search').textContent = found ? output : '✓ No se encontró "option" en localStorage';
+    </script>
+</body>
+</html>
