@@ -513,7 +513,6 @@ function createUser() {
 }
 
 function updateUsersList() {
-  // Aquí iría la lista de usuarios desde Firebase
   document.getElementById('usersList').innerHTML = '<span style="font-size: 12px; color: #999;">Los usuarios aparecerán aquí</span>';
 }
 
@@ -527,7 +526,6 @@ function showApp() {
   document.getElementById('appScreen').classList.add('active');
   document.getElementById('userDisplay').textContent = currentUser.displayName || currentUser.email;
 
-  // Mostrar admin panel solo si es admin
   if (currentUser.email === ADMIN_EMAIL) {
     document.getElementById('adminPanel').classList.add('active');
   }
