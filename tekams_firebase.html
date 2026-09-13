@@ -97,6 +97,16 @@ body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; 
   display: none;
 }
 
+.success-msg {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 13px;
+  display: none;
+}
+
 .toggle-register {
   text-align: center;
   margin-top: 1rem;
@@ -169,6 +179,7 @@ body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; 
 .app-body {
   flex: 1;
   padding: 2rem;
+  overflow-y: auto;
 }
 
 .admin-panel {
@@ -194,11 +205,13 @@ body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; 
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .form-row .form-group {
   flex: 1;
   margin-bottom: 0;
+  min-width: 150px;
 }
 
 .btn-create {
@@ -210,6 +223,7 @@ body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; 
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
+  align-self: flex-end;
 }
 
 .btn-create:hover {
@@ -222,13 +236,20 @@ body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; 
   border-top: 1px solid #eee;
 }
 
-.user-row {
+.user-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.75rem;
   border-bottom: 1px solid #f0f0f0;
   font-size: 13px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.user-item span {
+  flex: 1;
 }
 
 .summary-title {
@@ -279,6 +300,7 @@ tr:hover {
     <p>Control de Tiempos</p>
 
     <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
 
     <!-- LOGIN FORM -->
     <div id="loginForm">
@@ -308,8 +330,8 @@ tr:hover {
         <input type="email" id="registerEmail" placeholder="tu@email.com">
       </div>
       <div class="form-group">
-        <label>Contraseña temporal</label>
-        <input type="password" id="registerPassword" placeholder="Usa la que te dio Jose">
+        <label>Contraseña</label>
+        <input type="password" id="registerPassword" placeholder="Tu contraseña">
       </div>
       <button class="btn-login" onclick="register()">Crear Cuenta</button>
 
@@ -344,14 +366,14 @@ tr:hover {
           <input type="email" id="newUserEmail" placeholder="paula@tekams.com">
         </div>
         <div class="form-group">
-          <label>Contraseña temporal</label>
+          <label>Contraseña</label>
           <input type="password" id="newUserPass" placeholder="Contraseña inicial">
         </div>
-        <button class="btn-create" onclick="createUser()" style="align-self: flex-end;">+ Crear</button>
+        <button class="btn-create" onclick="createUser()">+ Crear</button>
       </div>
 
       <div class="users-list">
-        <strong style="font-size: 13px; color: #666;">Usuarios activos:</strong>
+        <strong style="font-size: 13px; color: #666;">👥 Usuarios del sistema:</strong>
         <div id="usersList" style="margin-top: 0.5rem;"></div>
       </div>
     </div>
@@ -400,42 +422,60 @@ tr:hover {
     </div>
 
     <p style="margin-top: 2rem; font-size: 12px; color: #999;">
-      ✅ Sistema funcionando. La matriz se actualiza en tiempo real desde Firebase.
+      ✅ Sistema funcionando correctamente
     </p>
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
 <script>
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDVIaHfxdZEv-u8s4TjhT7R-nW8s2nJ_C4",
-  authDomain: "tekams-tiempo.firebaseapp.com",
-  projectId: "tekams-tiempo-8f3a1",
-  storageBucket: "tekams-tiempo-8f3a1.firebasestorage.app",
-  messagingSenderId: "486857349652",
-  appId: "1:486857349652:web:23c6d49fc4c1c4e6c7b6a2"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
+// Sistema de autenticación con localStorage
 const ADMIN_EMAIL = 'jjgomez@tekams.com';
 let currentUser = null;
 
+// Inicializar datos
+function initData() {
+  if (!localStorage.getItem('tekams_users')) {
+    localStorage.setItem('tekams_users', JSON.stringify({}));
+  }
+}
+
+function getUsers() {
+  return JSON.parse(localStorage.getItem('tekams_users')) || {};
+}
+
+function saveUsers(users) {
+  localStorage.setItem('tekams_users', JSON.stringify(users));
+}
+
+function getCurrentSession() {
+  return localStorage.getItem('tekams_session');
+}
+
+function setCurrentSession(email) {
+  localStorage.setItem('tekams_session', email);
+}
+
+function clearSession() {
+  localStorage.removeItem('tekams_session');
+}
+
 // Check session on load
 window.addEventListener('DOMContentLoaded', function() {
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      currentUser = user;
+  initData();
+  const session = getCurrentSession();
+  if (session) {
+    const users = getUsers();
+    if (users[session]) {
+      currentUser = users[session];
+      currentUser.email = session;
       showApp();
     } else {
+      clearSession();
       showLogin();
     }
-  });
+  } else {
+    showLogin();
+  }
 });
 
 function toggleRegister() {
@@ -443,6 +483,7 @@ function toggleRegister() {
   const form2 = document.getElementById('registerForm');
   form1.style.display = form1.style.display === 'none' ? 'block' : 'none';
   form2.style.display = form2.style.display === 'none' ? 'block' : 'none';
+  clearMessages();
 }
 
 function showError(msg) {
@@ -450,6 +491,18 @@ function showError(msg) {
   errorDiv.textContent = msg;
   errorDiv.style.display = 'block';
   setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+}
+
+function showSuccess(msg) {
+  const successDiv = document.getElementById('successMsg');
+  successDiv.textContent = msg;
+  successDiv.style.display = 'block';
+  setTimeout(() => { successDiv.style.display = 'none'; }, 3000);
+}
+
+function clearMessages() {
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
 }
 
 function login() {
@@ -461,9 +514,15 @@ function login() {
     return;
   }
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => showApp())
-    .catch(err => showError(err.message));
+  const users = getUsers();
+  if (users[email] && users[email].password === password) {
+    currentUser = users[email];
+    currentUser.email = email;
+    setCurrentSession(email);
+    showApp();
+  } else {
+    showError('Email o contraseña incorrectos');
+  }
 }
 
 function register() {
@@ -476,16 +535,31 @@ function register() {
     return;
   }
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCred => {
-      userCred.user.updateProfile({ displayName: name });
-      showApp();
-    })
-    .catch(err => showError(err.message));
+  const users = getUsers();
+  if (users[email]) {
+    showError('Este email ya está registrado');
+    return;
+  }
+
+  users[email] = {
+    name: name,
+    password: password,
+    created: new Date().toISOString()
+  };
+
+  saveUsers(users);
+  showSuccess('¡Cuenta creada! Inicia sesión ahora');
+
+  setTimeout(() => {
+    document.getElementById('registerName').value = '';
+    document.getElementById('registerEmail').value = '';
+    document.getElementById('registerPassword').value = '';
+    toggleRegister();
+  }, 1500);
 }
 
 function createUser() {
-  if (currentUser?.email !== ADMIN_EMAIL) {
+  if (currentUser.email !== ADMIN_EMAIL) {
     showError('Solo los administradores pueden crear usuarios');
     return;
   }
@@ -499,22 +573,49 @@ function createUser() {
     return;
   }
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCred => {
-      userCred.user.updateProfile({ displayName: name });
-      alert(`✅ Usuario creado:\nEmail: ${email}\nContraseña: ${password}\n\nComparte estas credenciales con ${name}`);
+  const users = getUsers();
+  if (users[email]) {
+    showError('Este email ya existe');
+    return;
+  }
 
-      document.getElementById('newUserName').value = '';
-      document.getElementById('newUserEmail').value = '';
-      document.getElementById('newUserPass').value = '';
+  users[email] = {
+    name: name,
+    password: password,
+    created: new Date().toISOString()
+  };
 
-      updateUsersList();
-    })
-    .catch(err => showError('Error: ' + err.message));
+  saveUsers(users);
+
+  alert(`✅ Usuario creado:\n\nNombre: ${name}\nEmail: ${email}\nContraseña: ${password}\n\nComparte estas credenciales con ${name}`);
+
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserEmail').value = '';
+  document.getElementById('newUserPass').value = '';
+
+  updateUsersList();
 }
 
 function updateUsersList() {
-  document.getElementById('usersList').innerHTML = '<span style="font-size: 12px; color: #999;">Los usuarios aparecerán aquí</span>';
+  const users = getUsers();
+  const usersList = document.getElementById('usersList');
+
+  if (Object.keys(users).length === 0) {
+    usersList.innerHTML = '<div style="font-size: 12px; color: #999;">No hay usuarios aún</div>';
+    return;
+  }
+
+  let html = '';
+  for (const [email, user] of Object.entries(users)) {
+    const isAdmin = email === ADMIN_EMAIL ? ' 👑' : '';
+    html += `
+      <div class="user-item">
+        <span>${user.name}${isAdmin}</span>
+        <span style="color: #999; font-size: 12px;">${email}</span>
+      </div>
+    `;
+  }
+  usersList.innerHTML = html;
 }
 
 function showLogin() {
@@ -525,7 +626,7 @@ function showLogin() {
 function showApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appScreen').classList.add('active');
-  document.getElementById('userDisplay').textContent = currentUser.displayName || currentUser.email;
+  document.getElementById('userDisplay').textContent = `${currentUser.name} (${currentUser.email})`;
 
   if (currentUser.email === ADMIN_EMAIL) {
     document.getElementById('adminPanel').classList.add('active');
@@ -535,7 +636,13 @@ function showApp() {
 }
 
 function logout() {
-  auth.signOut().then(() => showLogin());
+  if (confirm('¿Cerrar sesión?')) {
+    clearSession();
+    currentUser = null;
+    showLogin();
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+  }
 }
 </script>
 
