@@ -1,0 +1,62 @@
+================================================================================
+  TEKAMS JUMP - SISTEMA DE LOGIN
+================================================================================
+
+INSTRUCCIONES:
+==============
+
+1. EJECUTAR EL SCRIPT
+   - Haz doble clic en: EJECUTAR.bat
+   - Se abrirá una ventana de consola mostrando el progreso
+   - Espera a que termine (verás "PROCESO COMPLETADO EXITOSAMENTE")
+   - Presiona cualquier tecla para cerrar la ventana
+
+2. ARCHIVO GENERADO
+   - Se creará automáticamente: tekams_firebase.html
+   - Ubicación: C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas\
+
+3. INICIAR SESIÓN
+   - Abre tekams_firebase.html en tu navegador
+   - Verás una pantalla de login
+   - Usuario y contraseña (ver abajo)
+
+================================================================================
+  USUARIOS Y CONTRASEÑAS
+================================================================================
+
+ADMINISTRADOR (ve TODO el sistema):
+  - Usuario: jjgomez@tekams.com
+  - Contraseña: 1234
+
+USUARIOS NORMALES (ven solo su información):
+  - paula@tekams.com
+  - puri@tekams.com
+  - fran@tekams.com
+  - antonio@tekams.com
+  - juanjo@tekams.com
+  - jon@tekams.com
+
+  Contraseña: 1234 (todos)
+
+================================================================================
+  CARACTERÍSTICAS DEL SISTEMA
+================================================================================
+
+✓ Login con sesión persistente (se mantiene durante la sesión del navegador)
+✓ Logout disponible en la esquina superior derecha
+✓ Control de permisos (Admin vs Usuarios normales)
+✓ Interfaz Tekams Jump original 100% funcional
+✓ Gestión completa de proyectos, tareas y subtareas
+✓ Dashboard, Gantt, equipo, y todas las vistas
+
+================================================================================
+  PROBLEMAS?
+================================================================================
+
+Si el script no funciona:
+1. Verifica que Python 3 esté instalado
+2. Abre una terminal en esta carpeta
+3. Ejecuta: python GENERAR_TEKAMS_LOGIN.py
+4. Revisa los mensajes de error
+
+================================================================================

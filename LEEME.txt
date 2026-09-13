@@ -1,0 +1,125 @@
+===============================================
+TEKAMS JUMP CON AUTENTICACIÓN Y LOGIN
+===============================================
+
+¿QUE ES ESTO?
+
+Este conjunto de archivos generará un sistema Tekams Jump completo
+con login screen, autenticación de usuarios y control de permisos.
+
+ARCHIVOS INCLUIDOS:
+
+1. generar_tekams_completo.py
+   - Script Python que procesa el archivo original de Tekams Jump
+   - Integra el sistema de login y autenticación
+   - Genera el archivo HTML final
+
+2. GENERAR_TEKAMS.bat
+   - Archivo ejecutable que corre el script Python automáticamente
+   - Simplifica el proceso de generación
+
+3. LEEME.txt
+   - Este archivo con instrucciones
+
+COMO USAR:
+
+OPCION 1 - RECOMENDADO (Más fácil):
+=====================================
+1. Localiza la carpeta: C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas
+2. Haz DOBLE CLIC en: GENERAR_TEKAMS.bat
+3. Espera a que se complete (verás mensajes de progreso)
+4. Se creará automáticamente: tekams_firebase.html
+5. Abre tekams_firebase.html en tu navegador
+
+OPCION 2 - Manual con Python:
+=============================
+1. Abre una terminal (cmd.exe)
+2. Navega a la carpeta:
+   cd "C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas"
+3. Ejecuta:
+   python generar_tekams_completo.py
+4. Se creará: tekams_firebase.html
+5. Abre el archivo en tu navegador
+
+USUARIOS DISPONIBLES:
+
+Administrador:
+  Email: jjgomez@tekams.com
+  Contraseña: 1234
+  Permisos: Ve TODO el sistema
+
+Usuarios Normales:
+  Paula       - Contraseña: 1234
+  Puri        - Contraseña: 1234
+  Fran        - Contraseña: 1234
+  Antonio     - Contraseña: 1234
+  JuanJo      - Contraseña: 1234
+  Jon         - Contraseña: 1234
+  Permisos: Ven solo su data
+
+CARACTERISTICAS:
+
+✓ Login Screen profesional
+✓ Autenticación con localStorage (sesión persistente)
+✓ Control de permisos (Admins vs Usuarios)
+✓ Badge de usuario con botón logout
+✓ 100% del sistema Tekams Jump original
+✓ Proyectos, Tareas, Dashboard, Gantt, Equipo
+✓ Almacenamiento automático de datos
+
+REQUISITOS:
+
+- Navegador web moderno (Chrome, Firefox, Edge, Safari)
+- Python 3 instalado (para ejecutar el generador)
+- Conexión a internet (para cargar fuentes de Google)
+
+SOLUCION DE PROBLEMAS:
+
+P: El .bat no funciona
+R: Asegúrate de tener Python instalado. Ejecuta: python --version
+
+P: "ModuleNotFoundError"
+R: Reinicia la terminal y vuelve a intentar
+
+P: El archivo no se crea
+R: Verifica que tengas permisos de escritura en la carpeta de Desktop
+
+P: ¿Cómo cambio las contraseñas?
+R: Abre generar_tekams_completo.py en un editor de texto y edita
+   la sección AUTH_USERS (línea ~50)
+
+ARCHIVO FINAL:
+
+Una vez generado, el archivo tekams_firebase.html:
+- Es 100% funcional sin dependencias externas
+- Puede ser compartido y usado en cualquier navegador
+- Mantiene los datos en localStorage del navegador
+- No requiere servidor web
+
+ESTRUCTURA DEL ARCHIVO GENERADO:
+
+- Login Screen (al abrir)
+- Autenticación con localStorage
+- Sistema Tekams Jump original 100% integrado
+- Badge de usuario + logout
+- Sistema de permisos
+
+PROXIMAS VECES:
+
+La próxima vez que abras tekams_firebase.html:
+- Si está logueado, carga directamente al dashboard
+- Si no, muestra el login
+- La sesión se mantiene en el navegador (localStorage)
+
+Para cerrar sesión: Haz clic en "Logout" en la esquina superior derecha
+
+SOPORTE:
+
+Si tienes problemas:
+1. Verifica que el archivo original esté en la ubicación correcta
+2. Intenta ejecutar el script nuevamente
+3. Abre la consola del navegador (F12) para ver errores
+
+===============================================
+FIN DE INSTRUCCIONES
+===============================================

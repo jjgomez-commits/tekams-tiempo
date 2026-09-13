@@ -1,0 +1,115 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                    TEKAMS JUMP - GUÍA FINAL RÁPIDA                        ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+PASO 1: GENERAR EL ARCHIVO
+═══════════════════════════════════════════════════════════════════════════
+
+Haz DOBLE CLIC en:
+  📄 GENERAR_TEKAMS.bat
+
+(Está en: C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas\)
+
+PASO 2: ESPERAR
+═══════════════════════════════════════════════════════════════════════════
+
+Verás una ventana con mensajes de progreso:
+  [1/5] Leyendo archivo original...
+  [2/5] Extrayendo código JavaScript...
+  [3/5] Modificando código para autenticación...
+  [4/5] Generando archivo final...
+  [5/5] Verificando archivo...
+
+Cuando terminar presiona una tecla para cerrar.
+
+PASO 3: ABRIR EL ARCHIVO
+═══════════════════════════════════════════════════════════════════════════
+
+El archivo generado es:
+  📄 tekams_firebase.html
+
+Ubicación:
+  C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas\tekams_firebase.html
+
+ABRE en tu navegador (doble clic):
+  tekams_firebase.html
+
+PASO 4: INICIAR SESIÓN
+═══════════════════════════════════════════════════════════════════════════
+
+Verás un login screen. Usa uno de estos usuarios:
+
+ADMINISTRADOR:
+  Usuario: jjgomez@tekams.com
+  Contraseña: 1234
+  ✓ Ve TODO el sistema
+
+USUARIOS NORMALES:
+  Usuario: Paula, Puri, Fran, Antonio, JuanJo, Jon
+  Contraseña: 1234 (para todos)
+  ✓ Ven solo su data
+
+PASO 5: ¡USAR!
+═══════════════════════════════════════════════════════════════════════════
+
+Ya está todo:
+  ✓ Sistema de Seguimiento de Proyectos (Tekams Jump) 100% funcional
+  ✓ Login con autenticación
+  ✓ Sesión persistente (localStorage)
+  ✓ Badge de usuario con logout
+  ✓ Control de permisos
+
+FEATURES DISPONIBLES:
+  • Dashboard - Resumen de proyectos
+  • Proyectos - Gestión de proyectos
+  • Gantt - Diagrama de Gantt
+  • Equipo - Miembros del equipo
+  • Configuración - Ajustes del sistema
+
+CERRAR SESIÓN:
+═══════════════════════════════════════════════════════════════════════════
+
+Haz clic en "Logout" en la esquina superior derecha
+
+PROXIMAS VECES:
+═══════════════════════════════════════════════════════════════════════════
+
+Cuando abras tekams_firebase.html nuevamente:
+  - Si estás logueado → entra directo
+  - Si no estás logueado → muestra login
+
+IMPORTANTE:
+═══════════════════════════════════════════════════════════════════════════
+
+• El archivo se genera UNA SOLA VEZ (cuando ejecutas el .bat)
+• Después puedes usar tekams_firebase.html directamente
+• Los datos se guardan en localStorage del navegador
+• Puedes compartir el archivo HTML con otros
+
+REQUISITOS:
+═══════════════════════════════════════════════════════════════════════════
+
+✓ Navegador web (Chrome, Firefox, Edge, Safari)
+✓ Python 3 (solo para generar el archivo la primera vez)
+✓ Internet (para fuentes de Google)
+
+ARCHIVOS GENERADOS:
+═══════════════════════════════════════════════════════════════════════════
+
+En la carpeta C:\Users\Jose J. Gómez\Desktop\Seguimiento tareas\
+
+  generar_tekams_completo.py  (Script Python - no tocar)
+  GENERAR_TEKAMS.bat          (Ejecutar para generar)
+  tekams_firebase.html        (ARCHIVO FINAL - abrir en navegador)
+  LEEME.txt                   (Instrucciones detalladas)
+  INSTRUCCIONES_FINALES.txt   (Este archivo)
+
+═══════════════════════════════════════════════════════════════════════════
+
+¡LISTO PARA USAR!
+
+Ejecuta: GENERAR_TEKAMS.bat
+Luego abre: tekams_firebase.html
+Inicia sesión y ¡comienza a usar Tekams Jump!
+
+═══════════════════════════════════════════════════════════════════════════
