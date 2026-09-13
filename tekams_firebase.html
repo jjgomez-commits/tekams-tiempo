@@ -9,286 +9,83 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; background: #F2F1F8; color: #1A1940; }
 
-/* LOGIN SCREEN */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #2A2963 0%, #1E1D4A 100%);
-}
+/* LOGIN */
+.login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2A2963 0%, #1E1D4A 100%); }
+.login-box { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(42, 41, 99, 0.2); width: 100%; max-width: 400px; }
+.login-box h1 { font-size: 28px; margin-bottom: 0.5rem; color: #2A2963; text-align: center; }
+.login-box p { text-align: center; color: #999; margin-bottom: 2rem; font-size: 14px; }
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 0.5rem; text-transform: uppercase; }
+.form-group input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
+.form-group input:focus { outline: none; border-color: #2A2963; background: #fafbfc; }
+.btn-login { width: 100%; padding: 12px; background: #2A2963; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.btn-login:hover { background: #1E1D4A; }
+.error-msg { background: #ffe8e8; color: #C02020; padding: 10px 12px; border-radius: 6px; margin-bottom: 1rem; font-size: 13px; display: none; }
+.success-msg { background: #e8f5e9; color: #2e7d32; padding: 10px 12px; border-radius: 6px; margin-bottom: 1rem; font-size: 13px; display: none; }
+.toggle-register { text-align: center; margin-top: 1rem; font-size: 13px; color: #666; }
+.toggle-register button { background: none; border: none; color: #2A2963; cursor: pointer; font-weight: 600; text-decoration: underline; font-family: 'DM Sans', sans-serif; }
 
-.login-box {
-  background: white;
-  padding: 3rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(42, 41, 99, 0.2);
-  width: 100%;
-  max-width: 400px;
-}
+/* APP */
+.app-container { display: none; min-height: 100vh; background: #F2F1F8; }
+.app-container.active { display: flex; flex-direction: column; }
+.app-header { background: #2A2963; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.app-header h2 { font-size: 20px; }
+.user-info { display: flex; gap: 1rem; align-items: center; }
+.user-info span { font-size: 13px; opacity: 0.9; }
+.btn-logout { padding: 6px 12px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif; }
+.btn-logout:hover { background: rgba(255,255,255,0.3); }
 
-.login-box h1 {
-  font-size: 28px;
-  margin-bottom: 0.5rem;
-  color: #2A2963;
-  text-align: center;
-}
+.app-body { flex: 1; padding: 2rem; overflow-y: auto; }
 
-.login-box p {
-  text-align: center;
-  color: #999;
-  margin-bottom: 2rem;
-  font-size: 14px;
-}
+/* TABS */
+.tabs-header { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e0e0e0; }
+.tab-btn { padding: 0.75rem 1.5rem; background: none; border: none; color: #999; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; border-bottom: 3px solid transparent; font-size: 14px; }
+.tab-btn.active { color: #2A2963; border-bottom-color: #2A2963; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
+/* ADMIN PANEL */
+.admin-panel { background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.admin-panel h3 { color: #2A2963; margin-bottom: 1rem; font-size: 16px; }
+.form-row { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; margin-bottom: 0; min-width: 150px; }
+.btn-create { padding: 10px 20px; background: #1A7A4A; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; }
+.btn-create:hover { background: #0f5335; }
+.users-list { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; }
+.user-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 13px; background: #f9f9f9; border-radius: 4px; margin-bottom: 0.5rem; }
+.user-item span { flex: 1; }
+.btn-edit { padding: 4px 8px; background: #2196F3; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; margin: 0 2px; }
+.btn-delete { padding: 4px 8px; background: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; }
 
-.form-group label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-}
+/* TIME CAPTURE */
+.time-capture { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.time-capture h3 { color: #2A2963; margin-bottom: 1.5rem; font-size: 16px; }
+.controls-row { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: flex-end; }
+.controls-row .form-group { margin-bottom: 0; }
+.controls-row select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'DM Sans', sans-serif; }
+.btn-small { padding: 8px 16px; background: #2A2963; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; }
+.btn-small:hover { background: #1E1D4A; }
 
-.form-group input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
-}
+/* MATRIX */
+.matrix-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 2rem; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #2A2963; color: white; padding: 1rem; text-align: left; font-weight: 600; font-size: 13px; }
+td { padding: 0.75rem 1rem; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+tr:hover { background: #fafbfc; }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #2A2963;
-  background: #fafbfc;
-}
+.view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.view-btn { padding: 6px 12px; background: #e0e0e0; color: #666; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.view-btn.active { background: #2A2963; color: white; }
 
-.btn-login {
-  width: 100%;
-  padding: 12px;
-  background: #2A2963;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.btn-login:hover {
-  background: #1E1D4A;
-}
-
-.error-msg {
-  background: #ffe8e8;
-  color: #C02020;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 13px;
-  display: none;
-}
-
-.success-msg {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 13px;
-  display: none;
-}
-
-.toggle-register {
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 13px;
-  color: #666;
-}
-
-.toggle-register button {
-  background: none;
-  border: none;
-  color: #2A2963;
-  cursor: pointer;
-  font-weight: 600;
-  text-decoration: underline;
-  font-family: 'DM Sans', sans-serif;
-}
-
-/* MAIN APP */
-.app-container {
-  display: none;
-  min-height: 100vh;
-  background: #F2F1F8;
-}
-
-.app-container.active {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-header {
-  background: #2A2963;
-  color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.app-header h2 {
-  font-size: 20px;
-}
-
-.user-info {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.user-info span {
-  font-size: 13px;
-  opacity: 0.9;
-}
-
-.btn-logout {
-  padding: 6px 12px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.btn-logout:hover {
-  background: rgba(255,255,255,0.3);
-}
-
-.app-body {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-.admin-panel {
-  display: none;
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.admin-panel.active {
-  display: block;
-}
-
-.admin-panel h3 {
-  color: #2A2963;
-  margin-bottom: 1rem;
-  font-size: 16px;
-}
-
-.form-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.form-row .form-group {
-  flex: 1;
-  margin-bottom: 0;
-  min-width: 150px;
-}
-
-.btn-create {
-  padding: 10px 20px;
-  background: #1A7A4A;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-  align-self: flex-end;
-}
-
-.btn-create:hover {
-  background: #0f5335;
-}
-
-.users-list {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.user-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
-  background: #f9f9f9;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-}
-
-.user-item span {
-  flex: 1;
-}
-
-.summary-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #2A2963;
-  margin-bottom: 2rem;
-}
-
-.matrix-container {
-  background: white;
-  border-radius: 8px;
-  overflow-x: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  background: #2A2963;
-  color: white;
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 13px;
-}
-
-td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
-}
-
-tr:hover {
-  background: #fafbfc;
-}
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+.modal.active { display: flex; }
+.modal-content { background: white; padding: 2rem; border-radius: 8px; max-width: 400px; width: 100%; }
+.modal-content h4 { margin-bottom: 1rem; color: #2A2963; }
+.modal-content input { width: 100%; padding: 8px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 6px; }
+.modal-buttons { display: flex; gap: 1rem; }
+.modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.btn-save { background: #1A7A4A; color: white; }
+.btn-cancel { background: #ddd; color: #666; }
 </style>
 </head>
 <body>
@@ -298,11 +95,9 @@ tr:hover {
   <div class="login-box">
     <h1>Tekams</h1>
     <p>Control de Tiempos</p>
-
     <div class="error-msg" id="errorMsg"></div>
     <div class="success-msg" id="successMsg"></div>
 
-    <!-- LOGIN FORM -->
     <div id="loginForm">
       <div class="form-group">
         <label>Email</label>
@@ -313,13 +108,11 @@ tr:hover {
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
       <button class="btn-login" onclick="login()">Iniciar Sesión</button>
-
       <div class="toggle-register">
         ¿Primera vez? <button onclick="toggleRegister()">Crear cuenta</button>
       </div>
     </div>
 
-    <!-- REGISTER FORM -->
     <div id="registerForm" style="display: none;">
       <div class="form-group">
         <label>Nombre</label>
@@ -334,7 +127,6 @@ tr:hover {
         <input type="password" id="registerPassword" placeholder="Tu contraseña">
       </div>
       <button class="btn-login" onclick="register()">Crear Cuenta</button>
-
       <div class="toggle-register">
         ¿Ya tienes cuenta? <button onclick="toggleRegister()">Iniciar sesión</button>
       </div>
@@ -353,113 +145,131 @@ tr:hover {
   </div>
 
   <div class="app-body">
-    <!-- ADMIN PANEL -->
-    <div id="adminPanel" class="admin-panel">
-      <h3>🔑 Panel de Administrador - Crear Usuarios</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nombre del usuario</label>
-          <input type="text" id="newUserName" placeholder="Ej: Paula">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="newUserEmail" placeholder="paula@tekams.com">
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" id="newUserPass" placeholder="Contraseña inicial">
-        </div>
-        <button class="btn-create" onclick="createUser()">+ Crear</button>
-      </div>
+    <!-- TABS -->
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab('captura')">📝 Captura</button>
+      <button class="tab-btn" onclick="switchTab('resumen')">📈 Resumen</button>
+      <button class="tab-btn" id="adminTab" onclick="switchTab('admin')" style="display:none">🔑 Admin</button>
+    </div>
 
-      <div class="users-list">
-        <strong style="font-size: 13px; color: #666;">👥 Usuarios del sistema:</strong>
-        <div id="usersList" style="margin-top: 0.5rem;"></div>
+    <!-- CAPTURA TAB -->
+    <div id="captura" class="tab-content active">
+      <div class="time-capture">
+        <h3>Registrar Tiempo</h3>
+        <div class="controls-row">
+          <div class="form-group">
+            <label>Proyecto</label>
+            <select id="proyectoSelect">
+              <option value="">Selecciona proyecto</option>
+              <option value="Base">Base</option>
+              <option value="Proyecto 1">Proyecto 1</option>
+              <option value="Proyecto 2">Proyecto 2</option>
+              <option value="Proyecto 3">Proyecto 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Herramienta</label>
+            <select id="herramientaSelect">
+              <option value="">Selecciona herramienta</option>
+              <option value="H00 - PLAN DIRECTOR">H00 - PLAN DIRECTOR</option>
+              <option value="H05 - ARGUMENTARIO">H05 - ARGUMENTARIO</option>
+              <option value="H09 - TEATRO DE VENTAS">H09 - TEATRO DE VENTAS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Horas</label>
+            <input type="number" id="horasInput" placeholder="0.0" step="0.5" min="0">
+          </div>
+          <button class="btn-small" onclick="guardarTiempo()">+ Guardar</button>
+        </div>
       </div>
     </div>
 
-    <!-- SUMMARY -->
-    <div class="summary-title">📈 Resumen de Tiempos</div>
-    <div class="matrix-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Herramienta</th>
-            <th>Base</th>
-            <th>Proyecto 1</th>
-            <th>Proyecto 2</th>
-            <th>Proyecto 3</th>
-            <th>TOTAL</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>H00 - PLAN DIRECTOR</td>
-            <td>12.5h</td>
-            <td>8.5h</td>
-            <td>2.0h</td>
-            <td>1.5h</td>
-            <td><strong>12.0h</strong></td>
-          </tr>
-          <tr>
-            <td>H05 - ARGUMENTARIO</td>
-            <td>18.5h</td>
-            <td>12.0h</td>
-            <td>8.3h</td>
-            <td>5.5h</td>
-            <td><strong>25.8h</strong></td>
-          </tr>
-          <tr>
-            <td>H09 - TEATRO DE VENTAS</td>
-            <td>13.0h</td>
-            <td>5.0h</td>
-            <td>6.5h</td>
-            <td>8.0h</td>
-            <td><strong>19.5h</strong></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- RESUMEN TAB -->
+    <div id="resumen" class="tab-content">
+      <div style="margin-bottom: 1rem;">
+        <strong>Vista: </strong>
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="cambiarVista('horas')">Horas</button>
+          <button class="view-btn" onclick="cambiarVista('euros')">Euros</button>
+        </div>
+      </div>
+      <div class="matrix-container">
+        <table id="matrixTable">
+          <thead><tr><th>Herramienta</th><th>Base</th><th>Proyecto 1</th><th>Proyecto 2</th><th>Proyecto 3</th><th>TOTAL</th></tr></thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <p style="margin-top: 2rem; font-size: 12px; color: #999;">
-      ✅ Sistema funcionando correctamente
-    </p>
+    <!-- ADMIN TAB -->
+    <div id="admin" class="tab-content">
+      <div class="admin-panel">
+        <h3>🔑 Panel de Administrador</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" id="newUserName" placeholder="Ej: Paula">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="newUserEmail" placeholder="paula@tekams.com">
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="newUserPass" placeholder="Contraseña">
+          </div>
+          <button class="btn-create" onclick="createUser()">+ Crear</button>
+        </div>
+
+        <div class="users-list">
+          <strong>👥 Usuarios del sistema:</strong>
+          <div id="usersList" style="margin-top: 0.5rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR USUARIO -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <h4>Editar Usuario</h4>
+    <input type="text" id="editName" placeholder="Nombre">
+    <input type="password" id="editPass" placeholder="Nueva contraseña">
+    <div class="modal-buttons">
+      <button class="btn-save" onclick="saveEdit()">Guardar</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+    </div>
   </div>
 </div>
 
 <script>
-// Sistema de autenticación con localStorage
 const ADMIN_EMAIL = 'jjgomez@tekams.com';
 let currentUser = null;
+let editingUser = null;
+let vistaActual = 'horas';
+let COSTES_HORA = {};
 
-// Inicializar datos
 function initData() {
-  if (!localStorage.getItem('tekams_users')) {
-    localStorage.setItem('tekams_users', JSON.stringify({}));
+  if (!localStorage.getItem('tekams_users')) localStorage.setItem('tekams_users', JSON.stringify({}));
+  if (!localStorage.getItem('tekams_costes')) localStorage.setItem('tekams_costes', JSON.stringify({}));
+  if (!localStorage.getItem('tekams_tiempos')) localStorage.setItem('tekams_tiempos', JSON.stringify({}));
+
+  const users = getUsers();
+  COSTES_HORA = JSON.parse(localStorage.getItem('tekams_costes')) || {};
+  for (const email in users) {
+    if (!COSTES_HORA[email]) COSTES_HORA[email] = 50;
   }
+  localStorage.setItem('tekams_costes', JSON.stringify(COSTES_HORA));
 }
 
-function getUsers() {
-  return JSON.parse(localStorage.getItem('tekams_users')) || {};
-}
+function getUsers() { return JSON.parse(localStorage.getItem('tekams_users')) || {}; }
+function saveUsers(users) { localStorage.setItem('tekams_users', JSON.stringify(users)); }
+function getCurrentSession() { return localStorage.getItem('tekams_session'); }
+function setCurrentSession(email) { localStorage.setItem('tekams_session', email); }
+function clearSession() { localStorage.removeItem('tekams_session'); }
 
-function saveUsers(users) {
-  localStorage.setItem('tekams_users', JSON.stringify(users));
-}
-
-function getCurrentSession() {
-  return localStorage.getItem('tekams_session');
-}
-
-function setCurrentSession(email) {
-  localStorage.setItem('tekams_session', email);
-}
-
-function clearSession() {
-  localStorage.removeItem('tekams_session');
-}
-
-// Check session on load
 window.addEventListener('DOMContentLoaded', function() {
   initData();
   const session = getCurrentSession();
@@ -479,11 +289,8 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleRegister() {
-  const form1 = document.getElementById('loginForm');
-  const form2 = document.getElementById('registerForm');
-  form1.style.display = form1.style.display === 'none' ? 'block' : 'none';
-  form2.style.display = form2.style.display === 'none' ? 'block' : 'none';
-  clearMessages();
+  document.getElementById('loginForm').style.display = document.getElementById('loginForm').style.display === 'none' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = document.getElementById('registerForm').style.display === 'none' ? 'block' : 'none';
 }
 
 function showError(msg) {
@@ -500,20 +307,13 @@ function showSuccess(msg) {
   setTimeout(() => { successDiv.style.display = 'none'; }, 3000);
 }
 
-function clearMessages() {
-  document.getElementById('errorMsg').style.display = 'none';
-  document.getElementById('successMsg').style.display = 'none';
-}
-
 function login() {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
-
   if (!email || !password) {
     showError('Por favor completa todos los campos');
     return;
   }
-
   const users = getUsers();
   if (users[email] && users[email].password === password) {
     currentUser = users[email];
@@ -529,33 +329,21 @@ function register() {
   const name = document.getElementById('registerName').value;
   const email = document.getElementById('registerEmail').value;
   const password = document.getElementById('registerPassword').value;
-
   if (!name || !email || !password) {
     showError('Por favor completa todos los campos');
     return;
   }
-
   const users = getUsers();
   if (users[email]) {
     showError('Este email ya está registrado');
     return;
   }
-
-  users[email] = {
-    name: name,
-    password: password,
-    created: new Date().toISOString()
-  };
-
+  users[email] = { name: name, password: password, created: new Date().toISOString() };
+  COSTES_HORA[email] = 50;
   saveUsers(users);
+  localStorage.setItem('tekams_costes', JSON.stringify(COSTES_HORA));
   showSuccess('¡Cuenta creada! Inicia sesión ahora');
-
-  setTimeout(() => {
-    document.getElementById('registerName').value = '';
-    document.getElementById('registerEmail').value = '';
-    document.getElementById('registerPassword').value = '';
-    toggleRegister();
-  }, 1500);
+  setTimeout(() => { toggleRegister(); }, 1500);
 }
 
 function createUser() {
@@ -563,59 +351,83 @@ function createUser() {
     showError('Solo los administradores pueden crear usuarios');
     return;
   }
-
   const name = document.getElementById('newUserName').value;
   const email = document.getElementById('newUserEmail').value;
   const password = document.getElementById('newUserPass').value;
-
   if (!name || !email || !password) {
     showError('Por favor completa todos los campos');
     return;
   }
-
   const users = getUsers();
   if (users[email]) {
     showError('Este email ya existe');
     return;
   }
-
-  users[email] = {
-    name: name,
-    password: password,
-    created: new Date().toISOString()
-  };
-
+  users[email] = { name: name, password: password, created: new Date().toISOString() };
+  COSTES_HORA[email] = 50;
   saveUsers(users);
-
-  alert(`✅ Usuario creado:\n\nNombre: ${name}\nEmail: ${email}\nContraseña: ${password}\n\nComparte estas credenciales con ${name}`);
-
+  localStorage.setItem('tekams_costes', JSON.stringify(COSTES_HORA));
+  alert(`✅ Usuario creado:\n\nNombre: ${name}\nEmail: ${email}\nContraseña: ${password}`);
   document.getElementById('newUserName').value = '';
   document.getElementById('newUserEmail').value = '';
   document.getElementById('newUserPass').value = '';
-
   updateUsersList();
 }
 
 function updateUsersList() {
   const users = getUsers();
   const usersList = document.getElementById('usersList');
-
   if (Object.keys(users).length === 0) {
     usersList.innerHTML = '<div style="font-size: 12px; color: #999;">No hay usuarios aún</div>';
     return;
   }
-
   let html = '';
   for (const [email, user] of Object.entries(users)) {
     const isAdmin = email === ADMIN_EMAIL ? ' 👑' : '';
-    html += `
-      <div class="user-item">
-        <span>${user.name}${isAdmin}</span>
-        <span style="color: #999; font-size: 12px;">${email}</span>
-      </div>
-    `;
+    html += `<div class="user-item"><span><strong>${user.name}${isAdmin}</strong><br>${email}</span><button class="btn-edit" onclick="openEdit('${email}')">Editar</button><button class="btn-delete" onclick="deleteUser('${email}')">Borrar</button></div>`;
   }
   usersList.innerHTML = html;
+}
+
+function openEdit(email) {
+  editingUser = email;
+  const users = getUsers();
+  document.getElementById('editName').value = users[email].name;
+  document.getElementById('editPass').value = '';
+  document.getElementById('editModal').classList.add('active');
+}
+
+function saveEdit() {
+  if (!editingUser) return;
+  const users = getUsers();
+  const newName = document.getElementById('editName').value;
+  const newPass = document.getElementById('editPass').value;
+  if (newName) users[editingUser].name = newName;
+  if (newPass) users[editingUser].password = newPass;
+  saveUsers(users);
+  closeModal();
+  updateUsersList();
+  alert('✅ Usuario actualizado');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('active');
+  editingUser = null;
+}
+
+function deleteUser(email) {
+  if (email === ADMIN_EMAIL) {
+    alert('No puedes eliminar al administrador');
+    return;
+  }
+  if (confirm(`¿Eliminar a ${email}?`)) {
+    const users = getUsers();
+    delete users[email];
+    delete COSTES_HORA[email];
+    saveUsers(users);
+    localStorage.setItem('tekams_costes', JSON.stringify(COSTES_HORA));
+    updateUsersList();
+  }
 }
 
 function showLogin() {
@@ -627,12 +439,11 @@ function showApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appScreen').classList.add('active');
   document.getElementById('userDisplay').textContent = `${currentUser.name} (${currentUser.email})`;
-
   if (currentUser.email === ADMIN_EMAIL) {
-    document.getElementById('adminPanel').classList.add('active');
+    document.getElementById('adminTab').style.display = 'block';
+    updateUsersList();
   }
-
-  updateUsersList();
+  renderMatrix();
 }
 
 function logout() {
@@ -643,6 +454,70 @@ function logout() {
     document.getElementById('loginEmail').value = '';
     document.getElementById('loginPassword').value = '';
   }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'resumen') renderMatrix();
+}
+
+function guardarTiempo() {
+  const proyecto = document.getElementById('proyectoSelect').value;
+  const herramienta = document.getElementById('herramientaSelect').value;
+  const horas = parseFloat(document.getElementById('horasInput').value);
+
+  if (!proyecto || !herramienta || !horas) {
+    alert('Completa todos los campos');
+    return;
+  }
+
+  const tiempos = JSON.parse(localStorage.getItem('tekams_tiempos')) || {};
+  if (!tiempos[currentUser.email]) tiempos[currentUser.email] = {};
+  if (!tiempos[currentUser.email][proyecto]) tiempos[currentUser.email][proyecto] = {};
+  if (!tiempos[currentUser.email][proyecto][herramienta]) tiempos[currentUser.email][proyecto][herramienta] = 0;
+
+  tiempos[currentUser.email][proyecto][herramienta] += horas;
+  localStorage.setItem('tekams_tiempos', JSON.stringify(tiempos));
+
+  alert(`✅ ${horas}h guardadas en ${herramienta} - ${proyecto}`);
+  document.getElementById('horasInput').value = '';
+  document.getElementById('proyectoSelect').value = '';
+  document.getElementById('herramientaSelect').value = '';
+}
+
+function cambiarVista(tipo) {
+  vistaActual = tipo;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderMatrix();
+}
+
+function renderMatrix() {
+  const tiempos = JSON.parse(localStorage.getItem('tekams_tiempos')) || {};
+  const userTiempos = tiempos[currentUser.email] || {};
+
+  const herramientas = ['H00 - PLAN DIRECTOR', 'H05 - ARGUMENTARIO', 'H09 - TEATRO DE VENTAS'];
+  const proyectos = ['Base', 'Proyecto 1', 'Proyecto 2', 'Proyecto 3'];
+
+  let html = '';
+  for (const herramienta of herramientas) {
+    let row = `<tr><td><strong>${herramienta}</strong></td>`;
+    let total = 0;
+    for (const proyecto of proyectos) {
+      const valor = userTiempos[proyecto] && userTiempos[proyecto][herramienta] ? userTiempos[proyecto][herramienta] : 0;
+      const display = vistaActual === 'horas' ? valor.toFixed(1) + 'h' : (valor * COSTES_HORA[currentUser.email]).toFixed(2) + '€';
+      row += `<td>${display}</td>`;
+      if (vistaActual === 'horas') total += valor;
+      else total += valor * COSTES_HORA[currentUser.email];
+    }
+    const totalDisplay = vistaActual === 'horas' ? total.toFixed(1) + 'h' : total.toFixed(2) + '€';
+    row += `<td><strong>${totalDisplay}</strong></td></tr>`;
+    html += row;
+  }
+  document.getElementById('matrixBody').innerHTML = html;
 }
 </script>
 
