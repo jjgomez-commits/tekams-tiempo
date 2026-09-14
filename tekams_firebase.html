@@ -391,7 +391,7 @@ function seed(){var mo=function(n){var d=new Date();d.setMonth(d.getMonth()+n);r
 
 function save(){try{localStorage.setItem('tkm9_p',JSON.stringify(projs));localStorage.setItem('tkm9_d',JSON.stringify(pd));localStorage.setItem('tkm9_t',JSON.stringify(TEAM));}catch(e){}}
 
-function mkPD(pid){return{tools:JUMP.map(function(j){return{id:pid+'_'+j.n,num:j.n,name:j.name,person:'',date:'',status:'Pendiente',notes:'',subtasks:j.sts.map(function(s,i){return{id:pid+'_'+j.n+'_'+i,text:s,person:'',date:'',status:'Pendiente',notes:'',done:false}})}})}
+function mkPD(pid){return{tools:JUMP.map(function(j){return{id:pid+'_'+j.n,num:j.n,name:j.name,person:'',date:'',status:'Pendiente',notes:'',subtasks:j.sts.map(function(s,i){return{id:pid+'_'+j.n+'_'+i,text:s,person:'',date:'',status:'Pendiente',notes:'',done:false}})}})};}
 function proj(id){return projs.find(function(p){return p.id===(id||curP);})||null;}
 function pdata(id){return pd[id||curP]||{tools:[]};}
 function tStat(t){var ss=t.subtasks.map(function(s){return s.status;});if(ss.length&&ss.every(function(s){return s==='Completada';}))return'Completada';if(ss.some(function(s){return s==='En curso'||s==='Completada';}))return'En curso';return t.status||'Pendiente';}
