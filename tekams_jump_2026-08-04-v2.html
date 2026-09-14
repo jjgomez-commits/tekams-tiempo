@@ -402,8 +402,11 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
     <button class="nav-i on" id="nDash" onclick="showG('dash',this)"><i class="ti ti-layout-dashboard"></i>Resumen<span class="nb" id="nbP">0</span></button>
   </div>
   <div style="padding:.5rem 0 .1rem;flex:1">
-    <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.09em;padding:0 1rem;margin-bottom:3px">Proyectos</div>
-    <div id="sbProjs"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 1rem;margin-bottom:3px">
+      <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.09em">Proyectos</div>
+      <button id="projToggle" onclick="toggleProj()" style="background:none;border:none;color:rgba(255,255,255,.28);cursor:pointer;font-size:12px;padding:0;display:flex;align-items:center;transition:transform 0.3s ease"><i class="ti ti-chevron-down" id="projToggleIcon"></i></button>
+    </div>
+    <div id="sbProjs" style="transition:max-height 0.3s ease, opacity 0.3s ease;overflow:hidden"></div>
     <button onclick="openPM()" style="display:flex;align-items:center;gap:6px;margin:.4rem 1rem;padding:6px 10px;border:1px dashed rgba(255,255,255,.16);border-radius:10px;color:rgba(255,255,255,.32);background:none;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .15s;width:calc(100% - 2rem)"><i class="ti ti-plus" style="font-size:13px"></i>Nuevo proyecto</button>
   </div>
   <div style="border-top:1px solid rgba(255,255,255,.08);padding:.4rem 0">
@@ -810,6 +813,8 @@ function load(){
   Object.keys(pd).forEach(function(pid){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
   });
+  // Restaurar estado del collapse de proyectos
+  setTimeout(restoreProj,100);
 }
 var hasChanges=false;
 function save(){
@@ -946,6 +951,23 @@ function copyN(person){
 function dimN(person){notifs=notifs.filter(function(n){return n.person!==person;});buildSB();renderTeam();}
 
 // ─ NAV ─
+function toggleProj(){
+  var el=document.getElementById('sbProjs');
+  var toggle=document.getElementById('projToggle');
+  var icon=document.getElementById('projToggleIcon');
+  el.classList.toggle('collapsed');
+  icon.style.transform=el.classList.contains('collapsed')?'rotate(-90deg)':'rotate(0)';
+  localStorage.setItem('tkm9_projCollapsed',el.classList.contains('collapsed')?'1':'0');
+}
+function restoreProj(){
+  var collapsed=localStorage.getItem('tkm9_projCollapsed')==='1';
+  var el=document.getElementById('sbProjs');
+  var icon=document.getElementById('projToggleIcon');
+  if(collapsed){
+    el.classList.add('collapsed');
+    icon.style.transform='rotate(-90deg)';
+  }
+}
 function buildSB(){
   var el=document.getElementById('sbProjs');if(!el)return;
   el.innerHTML='';
@@ -1367,7 +1389,9 @@ function printProj(){
     +'th{background:#2A2963;color:#fff;padding:8px 10px;text-align:left}'
     +'tr:nth-child(even){background:#f9f9fc}td{border-bottom:1px solid #e8e8f0}'
     +'.btn{background:#2A2963;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;margin-right:8px}'
-    +'@media print{.btn{display:none}}</style>'
+    +'@media print{.btn{display:none}}
+#sbProjs.collapsed{max-height:0;opacity:0;}
+</style>'
     +'</head><body>'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><img src="'+logoSrc+'" style="height:36px;object-fit:contain;mix-blend-mode:multiply" alt="Tekams"><div style="font-size:10px;color:#999">Tekams Jump · '+new Date().toLocaleDateString('es-ES')+'</div></div>'
     +'<h1 style="margin:0 0 8px 0">'+p.name+'</h1>'
