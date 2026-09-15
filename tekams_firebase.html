@@ -861,8 +861,9 @@ function seed(){
 
 // ─ HELPERS ─
 function proj(id){return projs.find(function(p){return p.id===(id||curP);})||null;}
-function pdata(id){return pd[id||curP]||{tools:[]};}
+function pdata(id){var pid=id||curP;var data=pd[pid];if(!data)return{tools:[]};if(!data.tools)data.tools=[];return data;}
 function tStat(t){
+  if(!t||!t.subtasks)return'Sin datos';
   var ss=t.subtasks.map(function(s){return s.status;});
   if(ss.length&&ss.every(function(s){return s==='Completada';}))return'Completada';
   if(ss.some(function(s){return s==='En curso'||s==='Completada';}))return'En curso';
@@ -1651,7 +1652,8 @@ function renderGantt(){
 
 function renderPH(){
   var p=proj();if(!p)return;
-  var tools=pdata().tools;
+  var pd_data=pdata();if(!pd_data||!pd_data.tools)return;
+  var tools=pd_data.tools;
   var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
   var curso=tools.filter(function(t){return tStat(t)==='En curso';}).length;
   var pct=tools.length?Math.round(done/tools.length*100):0;
