@@ -1138,9 +1138,14 @@ function renderDashProjs(){
       +'<div class="dc2"><div class="dc2v" style="color:var(--gn)">'+done+'</div><div class="dc2l">Hechas</div></div>'
       +'<div class="dc2"><div class="dc2v" style="color:'+(late>0?'var(--rd)':'var(--tx)')+'">'+late+'</div><div class="dc2l">Vencidas</div></div></div>'
       +'<div class="avs">'+avH+'</div>'+lH+'</div>';
-  });
-  h+='</div>';
-  el.innerHTML=h;
+    });
+    h+='</div>';
+    el.innerHTML=h;
+  }catch(e){
+    console.error('Error in renderDashProjs:',e);
+    var el=document.getElementById('dashC');
+    if(el)el.innerHTML='<div class="emp2"><i class="ti ti-alert-circle"></i>Error al cargar proyectos.</div>';
+  }
 }
 
 function renderDashTasks(){
