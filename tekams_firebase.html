@@ -1084,31 +1084,41 @@ function setDashFilt(val,btn){
 }
 
 function renderDashProjs(){
-  var el=document.getElementById('dashC');if(!el)return;
-  var today=new Date();
-  if(!projs.length){el.innerHTML='<div class="emp2"><i class="ti ti-folder-off"></i>No hay proyectos.</div>';return;}
-  var h='<div class="dg">';
-  projs.forEach(function(p){
-    var tools=pdata(p.id).tools;
-    var allS=[];tools.forEach(function(t){t.subtasks.forEach(function(s){allS.push(s);});});
-    var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
-    var curso=tools.filter(function(t){return tStat(t)==='En curso';}).length;
-    var pct=tools.length?Math.round(done/tools.length*100):0;
-    var late=tools.filter(function(t){return t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today;}).length
-            +allS.filter(function(s){return !s.done&&s.date&&new Date(s.date+'T23:59:59')<today;}).length;
-    var team=TEAM.filter(function(n){return(p.team||[]).indexOf(n)>=0;});
-    var avH=team.map(function(name){
-      var mt=tools.filter(function(t){return t.person===name;});
-      var ms=allS.filter(function(s){return s.person===name&&!s.done;});
-      var cnt=mt.length+ms.length;
-      var mL=ms.filter(function(s){return s.date&&new Date(s.date+'T23:59:59')<today;}).length;
-      return'<div class="av'+(cnt>0?' has':' emp')+'" title="'+esc(name)+': '+cnt+' tareas">'+ini(name)+(cnt>0?'<span class="avc'+(mL>0?' red':'')+'">'+cnt+'</span>':'')+'</div>';
-    }).join('');
-    var urg=[];
-    tools.forEach(function(t){
-      if(t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today)urg.push({n:t.num+'. '+t.name,w:t.person,d:t.date});
-      t.subtasks.forEach(function(s){if(!s.done&&s.date&&new Date(s.date+'T23:59:59')<today)urg.push({n:s.text,w:s.person,d:s.date});});
-    });
+  try{
+    var el=document.getElementById('dashC');if(!el)return;
+    var today=new Date();
+    if(!projs||!projs.length){el.innerHTML='<div class="emp2"><i class="ti ti-folder-off"></i>No hay proyectos.</div>';return;}
+    var h='<div class="dg">';
+    projs.forEach(function(p){
+      if(!p||!p.id)return;
+      var pda=pdata(p.id);
+      if(!pda||!pda.tools||!Array.isArray(pda.tools))return;
+      var tools=pda.tools;
+      var allS=[];
+      tools.forEach(function(t){
+        if(!t||!Array.isArray(t.subtasks))return;
+        t.subtasks.forEach(function(s){allS.push(s);});
+      });
+      var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
+      var curso=tools.filter(function(t){return tStat(t)==='En curso';}).length;
+      var pct=tools.length?Math.round(done/tools.length*100):0;
+      var late=tools.filter(function(t){return t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today;}).length
+              +allS.filter(function(s){return !s.done&&s.date&&new Date(s.date+'T23:59:59')<today;}).length;
+      var team=(p.team&&Array.isArray(p.team))?p.team:[];
+      var avH=team.map(function(name){
+        var mt=tools.filter(function(t){return t.person===name;});
+        var ms=allS.filter(function(s){return s.person===name&&!s.done;});
+        var cnt=mt.length+ms.length;
+        var mL=ms.filter(function(s){return s.date&&new Date(s.date+'T23:59:59')<today;}).length;
+        return'<div class="av'+(cnt>0?' has':' emp')+'" title="'+esc(name)+': '+cnt+' tareas">'+ini(name)+(cnt>0?'<span class="avc'+(mL>0?' red':'')+'">'+cnt+'</span>':'')+'</div>';
+      }).join('');
+      var urg=[];
+      tools.forEach(function(t){
+        if(t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today)urg.push({n:t.num+'. '+t.name,w:t.person,d:t.date});
+        if(Array.isArray(t.subtasks)){
+          t.subtasks.forEach(function(s){if(s&&!s.done&&s.date&&new Date(s.date+'T23:59:59')<today)urg.push({n:s.text,w:s.person,d:s.date});});
+        }
+      });
     var lH=urg.length
       ?'<div class="ls2"><div class="lt3"><i class="ti ti-alert-triangle" style="font-size:10px;vertical-align:-1px;color:var(--rd);margin-right:2px"></i>Vencidas ('+urg.length+')</div>'
         +urg.slice(0,4).map(function(u){return'<div class="li"><span class="ln">'+esc(u.n)+'</span>'+(u.w?'<span class="lw2">'+esc(u.w)+'</span>':'')+'<span class="ld">'+fmt(u.d)+'</span></div>';}).join('')
@@ -1153,12 +1163,16 @@ function renderDashTasks(){
   names.forEach(function(name){
     var mySubs=[];
     projs.forEach(function(p){
+      if(!p||!p.id)return;
       var pda=pdata(p.id);
+      if(!pda||!pda.tools||!Array.isArray(pda.tools))return;
       pda.tools.forEach(function(t){
+        if(!t||!t.id)return;
         var tIdx=pda.tools.findIndex(function(x){return x.id===t.id;});
         var calcd=calcToolDates(t,p.start,tIdx);
+        if(!Array.isArray(t.subtasks))return;
         t.subtasks.forEach(function(s){
-          if(s.person===name&&s.status!=='Completada'){
+          if(s&&s.person===name&&s.status!=='Completada'){
             mySubs.push({projName:p.name,projId:p.id,toolNum:t.num,toolName:t.name,
               toolSt:tStat(t),toolStart:calcd.start,toolEnd:calcd.end,sub:s});
           }
