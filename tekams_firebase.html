@@ -787,7 +787,13 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const fbProjs=db.ref('projs');
 const fbPd=db.ref('pd');
-let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
+let projs=[], pd={};
+let curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
+// Asegurar que projs siempre sea un array
+Object.defineProperty(window, 'projsProxy', {
+  get: function() { return Array.isArray(projs) ? projs : []; },
+  set: function(val) { projs = Array.isArray(val) ? val : []; }
+});
 let eTid=null, eStids=null;
 
 // ─ STORAGE ─
@@ -800,23 +806,24 @@ function reorderNums(tools){
 function load(){
   fbProjs.once('value',function(snap){
     var fbProjs_val=snap.val();
-    if(fbProjs_val){projs=fbProjs_val;}
+    if(fbProjs_val&&Array.isArray(fbProjs_val)){projs=fbProjs_val;}
+    else if(fbProjs_val&&typeof fbProjs_val==='object'){projs=Object.values(fbProjs_val);}
     else{
-      try{var r=localStorage.getItem('tkm9_p');if(r){projs=JSON.parse(r);fbProjs.set(projs);}}catch(e){}
-      if(!projs.length&&typeof __D!=='undefined'&&__D&&__D.projs){projs=__D.projs;fbProjs.set(projs);}
+      try{var r=localStorage.getItem('tkm9_p');if(r){projs=JSON.parse(r);if(!Array.isArray(projs))projs=[];fbProjs.set(projs);}}catch(e){}
+      if(!projs||!projs.length){if(typeof __D!=='undefined'&&__D&&__D.projs){projs=__D.projs;fbProjs.set(projs);}else{projs=[];}}
     }
-    if(!projs.length)seed();
+    if(!projs||!projs.length)seed();
+    if(!Array.isArray(projs))projs=[];
     fbPd.once('value',function(snap){
       var fbPd_val=snap.val();
-      if(fbPd_val){pd=fbPd_val;}
+      if(fbPd_val&&typeof fbPd_val==='object'){pd=fbPd_val;}
       else{
         try{var r=localStorage.getItem('tkm9_d');if(r){pd=JSON.parse(r);fbPd.set(pd);}}catch(e){}
-        if(!Object.keys(pd).length&&typeof __D!=='undefined'&&__D&&__D.pd){pd=__D.pd||{};fbPd.set(pd);}
+        if(!Object.keys(pd).length){if(typeof __D!=='undefined'&&__D&&__D.pd){pd=__D.pd||{};}else{pd={};}}
       }
+      if(!pd||typeof pd!=='object')pd={};
       Object.keys(pd).forEach(function(pid){if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);});
-      buildSB();renderDash();
-      setupRealtimeListeners();
-      setTimeout(restoreProjList,100);
+      setTimeout(function(){buildSB();renderDash();setupRealtimeListeners();restoreProjList();},50);
     });
   });
 }
