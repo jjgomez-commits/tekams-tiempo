@@ -1831,8 +1831,29 @@ function saveNewP(){
   var name=document.getElementById('pName').value.trim();if(!name){alert('Escribe el nombre');return;}
   var team=[].slice.call(document.querySelectorAll('#pTeamCbs input:checked')).map(function(i){return i.value;});
   if(!team.length){alert('Selecciona equipo');return;}
-  var p={id:'p'+Date.now(),name:name,start:document.getElementById('pStart').value,end:document.getElementById('pEnd').value,team:team};
-  projs.push(p);pd[p.id]=mkPD(p.id);save();buildSB();closePM();openProj(p.id);
+  var newId='p'+Date.now();
+  var newProj={id:newId,name:name,start:document.getElementById('pStart').value,end:document.getElementById('pEnd').value,team:team};
+  projs.push(newProj);
+  // Buscar Workprotec como plantilla
+  var workprotec=projs.find(function(p){return p.name==='Workprotec'||p.name==='14. Workprotec';});
+  if(workprotec&&pd[workprotec.id]&&pd[workprotec.id].tools&&pd[workprotec.id].tools.length){
+    // Duplicar estructura de Workprotec
+    var srcData=pd[workprotec.id];
+    pd[newId]={tools:srcData.tools.map(function(t){
+      return{id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name||'',person:'',
+        date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
+        recurrent:t.recurrent||'',link:t.link||'',horas:0,costo:0,
+        subtasks:(t.subtasks||[]).map(function(s){
+          return{id:newId+'_st_'+Math.random().toString(36).slice(2),
+            text:s.text||'',person:'',date:'',status:'Pendiente',
+            notes:s.notes||'',done:false,recurrent:s.recurrent||'',
+            link:s.link||'',priority:s.priority||'',horas:0,costo:0};
+        })};
+    })};
+  }else{
+    pd[newId]=mkPD(newId);
+  }
+  save();buildSB();closePM();openProj(newId);
 }
 
 function saveSt(){var t=findTool(eStids.tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===eStids.sid;});if(!s)return;var pv=s.person;s.text=document.getElementById('stDesc').value.trim()||s.text;s.person=document.getElementById('stPers').value;s.date=document.getElementById('stDate').value;s.due_date=document.getElementById('stDate').value;s.status=document.getElementById('stStat').value;s.done=s.status==='Completada';s.recurrent=document.getElementById('stRec')?document.getElementById('stRec').value:'';s.notes=document.getElementById('stNotes').value.trim();
@@ -2117,19 +2138,21 @@ function duplicateProj(pid){
   var src=projs.find(function(p){return p.id===pid;});if(!src)return;
   var newId='p'+Date.now();
   var newName=src.name+' (copia)';
-  projs.push({id:newId,name:newName,start:'',end:'',team:src.team?src.team.slice():[]});
+  projs.push({id:newId,name:newName,start:src.start||'',end:src.end||'',team:src.team?src.team.slice():[]});
   var srcData=pdata(pid);
+  if(!srcData.tools||!srcData.tools.length){pd[newId]={tools:[]};save();buildSB();openProj(newId);showToast('Proyecto duplicado: '+newName);return;}
   pd[newId]={tools:srcData.tools.map(function(t){
-    return{id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name,person:t.person,
-      date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
-      recurrent:t.recurrent||'',link:t.link||'',
-      subtasks:t.subtasks.map(function(s){
+    if(!t)return null;
+    return{id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name||'Sin nombre',person:t.person||'',
+      date:t.date||'',ganttStart:t.ganttStart||'',status:t.status||'Pendiente',notes:t.notes||'',
+      recurrent:t.recurrent||'',link:t.link||'',horas:t.horas||0,costo:t.costo||0,
+      subtasks:(t.subtasks||[]).map(function(s){
         return{id:newId+'_st_'+Math.random().toString(36).slice(2),
-          text:s.text,person:s.person||'',date:'',status:'Pendiente',
-          notes:s.notes||'',done:false,recurrent:s.recurrent||'',
-          link:s.link||'',priority:s.priority||''};
+          text:s.text||'',person:s.person||'',date:s.date||'',status:s.status||'Pendiente',
+          notes:s.notes||'',done:s.done||false,recurrent:s.recurrent||'',
+          link:s.link||'',priority:s.priority||'',horas:s.horas||0,costo:s.costo||0};
       })};
-  })};
+  }).filter(function(t){return t!==null;})};
   save();buildSB();openProj(newId);
   showToast('Proyecto duplicado: '+newName);
 }
