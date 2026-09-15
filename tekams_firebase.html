@@ -6,6 +6,8 @@
 <title>Tekams Jump</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
 <style>
 
 
@@ -779,6 +781,12 @@ const JUMP_SCHEDULE = {
   '23':{sw:42, dw:4},  // Plan de Canales        w48-52
 };
 
+// Firebase Config
+const firebaseConfig={apiKey:"AIzaSyCoPi2i1zz0sSalePZE7EewlZG8-RfeuTI",authDomain:"tekams.firebaseapp.com",projectId:"tekams",databaseURL:"https://tekams-default-rtdb.firebaseio.com/",storageBucket:"tekams.firebasestorage.app",messagingSenderId:"848634111773",appId:"1:848634111773:web:38dcbec45439ca96c3a3f4"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const fbProjs=db.ref('projs');
+const fbPd=db.ref('pd');
 let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
 let eTid=null, eStids=null;
 
@@ -790,44 +798,32 @@ function reorderNums(tools){
   });
 }
 function load(){
-  // Si el archivo lleva datos incrustados (los deja "Guardar" al exportar/sobrescribir),
-  // usarlos directamente. No depender de localStorage para esto: algunos navegadores lo
-  // bloquean o no lo conservan al abrir un archivo con doble clic (file://), y antes eso
-  // hacia que los datos incrustados se perdieran en silencio al reabrir.
-  var loadedFromFile=false;
-  try{
-    if(typeof __D!=='undefined'&&__D&&__D.projs&&__D.projs.length){
-      projs=__D.projs;
-      pd=__D.pd||{};
-      loadedFromFile=true;
-    }
-  }catch(e){}
-  if(!loadedFromFile){
-    try{var r=localStorage.getItem('tkm9_p');if(r)projs=JSON.parse(r);}catch(e){}
-    try{var r=localStorage.getItem('tkm9_d');if(r)pd=JSON.parse(r);}catch(e){}
-  }
-  try{var r=localStorage.getItem('tkm9_t');if(r)TEAM=JSON.parse(r);}catch(e){}
-  if(!projs.length)seed();
-  // Reordenar números en caso de datos viejos
-  Object.keys(pd).forEach(function(pid){
-    if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
+  fbProjs.once('value',function(snap){
+    if(snap.val()){projs=snap.val();}
+    else if(typeof __D!=='undefined'&&__D&&__D.projs){projs=__D.projs;}
+    else{try{var r=localStorage.getItem('tkm9_p');if(r)projs=JSON.parse(r);}catch(e){}}
+    if(!projs.length)seed();
+    fbPd.once('value',function(snap){
+      if(snap.val()){pd=snap.val();}
+      else if(typeof __D!=='undefined'&&__D&&__D.pd){pd=__D.pd||{};}
+      else{try{var r=localStorage.getItem('tkm9_d');if(r)pd=JSON.parse(r);}catch(e){}}
+      Object.keys(pd).forEach(function(pid){if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);});
+      buildSB();renderDash();
+      setupRealtimeListeners();
+      setTimeout(restoreProjList,100);
+    });
   });
-  setTimeout(restoreProjList,100);
+}
+function setupRealtimeListeners(){
+  fbProjs.on('value',function(snap){if(snap.val()){projs=snap.val();buildSB();renderDash();}});
+  fbPd.on('value',function(snap){if(snap.val()){pd=snap.val();if(curP)renderPH();}});
 }
 var hasChanges=false;
 function save(){
   hasChanges=true;
-  try{
-    localStorage.setItem('tkm9_p',JSON.stringify(projs));
-    localStorage.setItem('tkm9_d',JSON.stringify(pd));
-    localStorage.setItem('tkm9_t',JSON.stringify(TEAM));
-  }catch(e){
-    console.error('No se pudo guardar en este navegador:', e);
-    if(!window._storageWarned){
-      window._storageWarned=true;
-      showToast('Este navegador no esta guardando los cambios. Usa "Guardar" para descargar una copia.');
-    }
-  }
+  fbProjs.set(projs).catch(function(e){console.error('Error saving projs:',e);showToast('Error al guardar proyectos');});
+  fbPd.set(pd).catch(function(e){console.error('Error saving pd:',e);showToast('Error al guardar datos');});
+  try{localStorage.setItem('tkm9_p',JSON.stringify(projs));localStorage.setItem('tkm9_d',JSON.stringify(pd));localStorage.setItem('tkm9_t',JSON.stringify(TEAM));}catch(e){}
 }
 function mkPD(pid){
   return{tools:JUMP.map(function(j){return{
