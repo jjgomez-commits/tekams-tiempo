@@ -1099,10 +1099,11 @@ function setDashFilt(val,btn){
 
 function renderDashProjs(){
   var el=document.getElementById('dashC');if(!el)return;
+  if(!projs||!Array.isArray(projs)||!projs.length){el.innerHTML='<div class="emp2"><i class="ti ti-folder-off"></i>No hay proyectos.</div>';return;}
   var today=new Date();
-  if(!projs.length){el.innerHTML='<div class="emp2"><i class="ti ti-folder-off"></i>No hay proyectos.</div>';return;}
   var h='<div class="dg">';
   projs.forEach(function(p){
+    if(!p||!p.id)return;
     var tools=pdata(p.id).tools;
     var allS=[];tools.forEach(function(t){t.subtasks.forEach(function(s){allS.push(s);});});
     var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
@@ -1149,6 +1150,7 @@ function renderDashProjs(){
 
 function renderDashTasks(){
   var el=document.getElementById('dash-tasks');if(!el)return;
+  if(!projs||!Array.isArray(projs)||!pd||typeof pd!=='object'){el.innerHTML='<div class="emp2"><i class="ti ti-list-off"></i>Sin tareas.</div>';return;}
   var today=new Date();today.setHours(0,0,0,0);
   var recLabels={yearly:'Anual',weekly:'Semanal',monthly:'Mensual',quarterly:'Trimestral'};
   var PRIO={alta:'[A]',media:'[M]',baja:'[B]'};
