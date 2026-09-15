@@ -821,8 +821,18 @@ function load(){
   });
 }
 function setupRealtimeListeners(){
-  fbProjs.on('value',function(snap){if(snap.val()){projs=snap.val();buildSB();renderDash();}});
-  fbPd.on('value',function(snap){if(snap.val()){pd=snap.val();if(curP)renderPH();}});
+  fbProjs.on('value',function(snap){
+    if(snap.val()){
+      projs=snap.val();
+      try{buildSB();renderDash();}catch(e){console.error('Error in buildSB/renderDash:',e);}
+    }
+  });
+  fbPd.on('value',function(snap){
+    if(snap.val()){
+      pd=snap.val();
+      try{if(curP&&pd[curP])renderPH();}catch(e){console.error('Error in renderPH:',e);}
+    }
+  });
 }
 var hasChanges=false;
 function save(){
