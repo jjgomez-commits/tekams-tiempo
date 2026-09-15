@@ -823,13 +823,14 @@ function load(){
 function setupRealtimeListeners(){
   fbProjs.on('value',function(snap){
     var val=snap.val();
-    if(val){projs=val;}
-    try{buildSB();renderDash();}catch(e){console.error('Error in buildSB/renderDash:',e);}
+    if(val&&Array.isArray(val)){projs=val;}
+    else if(val&&typeof val==='object'){projs=Object.values(val);}
+    try{if(buildSB)buildSB();if(renderDash)renderDash();}catch(e){console.error('Error in buildSB/renderDash:',e);}
   });
   fbPd.on('value',function(snap){
     var val=snap.val();
-    if(val){pd=val;}
-    try{if(curP&&pd&&pd[curP])renderPH();}catch(e){console.error('Error in renderPH:',e);}
+    if(val&&typeof val==='object'){pd=val;}
+    try{if(curP&&pd&&pd[curP]&&renderPH)renderPH();}catch(e){console.error('Error in renderPH:',e);}
   });
 }
 var hasChanges=false;
