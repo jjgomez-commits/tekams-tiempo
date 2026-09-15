@@ -2182,6 +2182,8 @@ try{
   document.body.innerHTML+='<div style="position:fixed;bottom:20px;right:20px;background:#C02020;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999">Error: '+e.message+'</div>';
 }
 setInterval(autoSave, 30000);
+// Firebase guarda automáticamente - no necesita beforeunload
+/*
 window.addEventListener('beforeunload', function(e){
   autoSave();
   if(hasChanges){
@@ -2190,6 +2192,7 @@ window.addEventListener('beforeunload', function(e){
     return e.returnValue;
   }
 });
+*/
 
 
 
