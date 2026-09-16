@@ -390,6 +390,8 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 
 
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -402,7 +404,10 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
     <button class="nav-i on" id="nDash" onclick="showG('dash',this)"><i class="ti ti-layout-dashboard"></i>Resumen<span class="nb" id="nbP">0</span></button>
   </div>
   <div style="padding:.5rem 0 .1rem;flex:1">
-    <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.09em;padding:0 1rem;margin-bottom:3px">Proyectos</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1rem;margin-bottom:3px">
+      <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.09em">Proyectos</div>
+      <button id="projToggleBtn" onclick="toggleProjList()" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:0;font-size:12px;transition:transform .2s;display:inline-flex;align-items:center">▼</button>
+    </div>
     <div id="sbProjs"></div>
     <button onclick="openPM()" style="display:flex;align-items:center;gap:6px;margin:.4rem 1rem;padding:6px 10px;border:1px dashed rgba(255,255,255,.16);border-radius:10px;color:rgba(255,255,255,.32);background:none;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .15s;width:calc(100% - 2rem)"><i class="ti ti-plus" style="font-size:13px"></i>Nuevo proyecto</button>
   </div>
@@ -778,6 +783,46 @@ const JUMP_SCHEDULE = {
 };
 
 let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
+
+// ─ FIREBASE CONFIG ─
+var firebaseConfig = {
+  apiKey: "AIzaSyCcPi21izz0sSaIgPZE7EewLZG8-RfFeUT1",
+  authDomain: "tekams.firebaseapp.com",
+  databaseURL: "https://tekams-default-rtdb.firebaseio.com",
+  projectId: "tekams",
+  storageBucket: "tekams.firebasestorage.app",
+  messagingSenderId: "848634111773",
+  appId: "1:848634111773:web:38dcbec45439ca96c3a3f4",
+  measurementId: "G-S2R1CD5DBL"
+};
+firebase.initializeApp(firebaseConfig);
+var dbProjs = firebase.database().ref('projects');
+var dbPd = firebase.database().ref('projectsData');
+
+function normalizeProjs(val){
+  if(!val) return [];
+  if(Array.isArray(val)) return val;
+  return Object.keys(val).map(function(k){return val[k];});
+}
+
+function setupRealtimeListeners(){
+  dbProjs.on('value',function(snap){
+    var d = snap.val();
+    if(d){
+      projs = normalizeProjs(d);
+      console.log('Firebase projs updated:', projs);
+      buildSB(); renderDash();
+    }
+  });
+  dbPd.on('value',function(snap){
+    var d = snap.val();
+    if(d){
+      pd = d;
+      console.log('Firebase pd updated:', pd);
+      renderDash();
+    }
+  });
+}
 let eTid=null, eStids=null;
 
 // ─ STORAGE ─
@@ -810,6 +855,39 @@ function load(){
   Object.keys(pd).forEach(function(pid){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
   });
+
+  // Cargar desde Firebase una vez
+  var fbLoaded={projs:false,pd:false};
+  try{
+    dbProjs.once('value',function(snap){
+      var d = snap.val();
+      if(d){
+        projs = normalizeProjs(d);
+      }
+      fbLoaded.projs=true;
+      if(fbLoaded.projs && fbLoaded.pd){
+        buildSB();
+        renderDash();
+        setupRealtimeListeners();
+      }
+    });
+    dbPd.once('value',function(snap){
+      var d = snap.val();
+      if(d) pd = d;
+      fbLoaded.pd=true;
+      if(fbLoaded.projs && fbLoaded.pd){
+        buildSB();
+        renderDash();
+        setupRealtimeListeners();
+      }
+    });
+  }catch(e){
+    console.error('Firebase load error:', e);
+    buildSB();
+    renderDash();
+    setupRealtimeListeners();
+  }
+
   setTimeout(restoreProjList,100);
 }
 var hasChanges=false;
@@ -825,6 +903,13 @@ function save(){
       window._storageWarned=true;
       showToast('Este navegador no esta guardando los cambios. Usa "Guardar" para descargar una copia.');
     }
+  }
+  // Guardar en Firebase también
+  try{
+    dbProjs.set(projs);
+    dbPd.set(pd);
+  }catch(e){
+    console.error('Firebase save error:', e);
   }
 }
 function mkPD(pid){
@@ -849,6 +934,7 @@ function seed(){
 function proj(id){return projs.find(function(p){return p.id===(id||curP);})||null;}
 function pdata(id){return pd[id||curP]||{tools:[]};}
 function tStat(t){
+  if(!t||!t.subtasks||!Array.isArray(t.subtasks))return t.status||'Pendiente';
   var ss=t.subtasks.map(function(s){return s.status;});
   if(ss.length&&ss.every(function(s){return s==='Completada';}))return'Completada';
   if(ss.some(function(s){return s==='En curso'||s==='Completada';}))return'En curso';
@@ -950,19 +1036,17 @@ function dimN(person){notifs=notifs.filter(function(n){return n.person!==person;
 function toggleProjList(){
   var list=document.getElementById('sbProjs');
   var btn=document.getElementById('projToggleBtn');
-  var icon=btn.querySelector('i');
   var isHidden=list.style.display==='none';
   list.style.display=isHidden?'block':'none';
-  icon.style.transform=isHidden?'rotate(0deg)':'rotate(-90deg)';
+  btn.textContent=isHidden?'▼':'▶';
   localStorage.setItem('tkm9_projCollapsed',isHidden?'0':'1');
 }
 function restoreProjList(){
   if(localStorage.getItem('tkm9_projCollapsed')==='1'){
     var list=document.getElementById('sbProjs');
     var btn=document.getElementById('projToggleBtn');
-    var icon=btn.querySelector('i');
     list.style.display='none';
-    icon.style.transform='rotate(-90deg)';
+    btn.textContent='▶';
   }
 }
 function buildSB(){
@@ -1130,9 +1214,9 @@ function renderDashProjs(){
       +'<div><div class="dcn">'+esc(p.name)+'</div>'+(p.end?'<div class="dcd">Fin: '+fmt(p.end)+'</div>':'')+'</div>'
       +'<button class="btn" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.15);font-size:11px;padding:4px 9px" onclick="openProj(\''+p.id+'\')">Ver <i class="ti ti-arrow-right" style="font-size:12px"></i></button>'
       +'</div>'
+      +'</div>'
       +'<div style="display:flex;align-items:center;gap:7px"><div class="pt2" style="flex:1"><div class="pf" style="width:'+pct+'%"></div></div>'
       +'<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);min-width:28px;text-align:right;font-family:DM Mono,monospace">'+pct+'%</span></div>'
-      +'</div>'
       +'<div class="dcs"><div class="dc2"><div class="dc2v">'+tools.length+'</div><div class="dc2l">Herram.</div></div>'
       +'<div class="dc2"><div class="dc2v" style="color:var(--bl)">'+curso+'</div><div class="dc2l">En curso</div></div>'
       +'<div class="dc2"><div class="dc2v" style="color:var(--gn)">'+done+'</div><div class="dc2l">Hechas</div></div>'
@@ -2195,7 +2279,7 @@ try{
   document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;top:0;left:0;right:0;background:#D94F2B;color:#fff;padding:8px 16px;font-size:12px;text-align:center;z-index:9999">Este navegador no esta guardando los cambios automaticamente (puede pasar al abrir el archivo con doble clic). Usa el boton "Guardar" arriba a la derecha para no perder tu trabajo.</div>');
 }
 try{
-  load();buildSB();renderDash();
+  load();
 }catch(e){
   console.error('Init error:',e);
   document.body.innerHTML+='<div style="position:fixed;bottom:20px;right:20px;background:#C02020;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999">Error: '+e.message+'</div>';
