@@ -782,7 +782,7 @@ const JUMP_SCHEDULE = {
   '23':{sw:42, dw:4},  // Plan de Canales        w48-52
 };
 
-let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
+let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools', openTools=[];
 
 // ─ FIREBASE CONFIG ─
 var firebaseConfig = {
@@ -1511,12 +1511,22 @@ function printProj(){
 function addSt(tid){var inp=document.getElementById('nst_'+tid);var text=inp.value.trim();if(!text)return;var t=findTool(tid);if(!t)return;t.subtasks.push({id:tid+'_st'+Date.now(),text:text,person:'',date:'',status:'Pendiente',notes:'',done:false,recurrent:''});inp.value='';save();renderToolsKeepOpen();}
 
 function addTool(){
-  var pda=pdata();
-  // El nuevo número es el índice = length actual (0-based: H00=0, H01=1...)
-  var nxt=String(pda.tools.length).padStart(2,'0');
-  pda.tools.push({id:curP+'_'+nxt+'_'+Date.now(),num:nxt,name:'Nueva herramienta',
-    person:'',date:'',ganttStart:'',status:'Pendiente',notes:'',recurrent:'',subtasks:[]});
-  save();renderTools();renderPH();
+  try{
+    var pda=pdata();
+    if(!pda||!pda.tools||!Array.isArray(pda.tools)){
+      console.error('Invalid pda structure:', pda);
+      alert('Error: Estructura de proyecto inválida');
+      return;
+    }
+    // El nuevo número es el índice = length actual (0-based: H00=0, H01=1...)
+    var nxt=String(pda.tools.length).padStart(2,'0');
+    pda.tools.push({id:curP+'_'+nxt+'_'+Date.now(),num:nxt,name:'Nueva herramienta',
+      person:'',date:'',ganttStart:'',status:'Pendiente',notes:'',recurrent:'',subtasks:[]});
+    save();renderTools();renderPH();
+  }catch(e){
+    console.error('Error adding tool:', e);
+    alert('Error al agregar herramienta: '+e.message);
+  }
 }
 
 function closeMoSt(){document.getElementById('moSt').classList.remove('on');eStids=null;}
@@ -1766,11 +1776,11 @@ function renderTools(){
   var pf=document.getElementById('pfilt')?document.getElementById('pfilt').value:'';
   var today=new Date();
   var tools=pdata().tools.slice();
-  if(pf)tools=tools.filter(function(t){return t.person===pf||t.subtasks.some(function(s){return s.person===pf;});});
+  if(pf)tools=tools.filter(function(t){return t.person===pf||(Array.isArray(t.subtasks)&&t.subtasks.some(function(s){return s.person===pf;}));});
   if(filt==='pendiente')tools=tools.filter(function(t){return tStat(t)==='Pendiente';});
   else if(filt==='curso')tools=tools.filter(function(t){return tStat(t)==='En curso';});
   else if(filt==='done')tools=tools.filter(function(t){return tStat(t)==='Completada';});
-  else if(filt==='mias'){var mn=ME;tools=tools.filter(function(t){return t.person===mn||t.subtasks.some(function(s){return s.person===mn;});});}
+  else if(filt==='mias'){var mn=ME;tools=tools.filter(function(t){return t.person===mn||(Array.isArray(t.subtasks)&&t.subtasks.some(function(s){return s.person===mn;}));});}
   if(!tools.length){document.getElementById('toolList').innerHTML='<div class="emp2"><i class="ti ti-filter-off"></i>Sin resultados</div>';return;}
   var con=document.getElementById('toolList');con.innerHTML='';
   tools.forEach(function(tool){
@@ -1821,9 +1831,10 @@ function renderTools(){
     var eb=document.createElement('button');eb.className='ib';eb.innerHTML='<i class="ti ti-edit"></i>';eb.title='Editar';eb.addEventListener('click',function(e){e.stopPropagation();openMoTool(tid);});hdr.appendChild(eb);
     var db2=document.createElement('button');db2.className='ib';db2.innerHTML='<i class="ti ti-trash"></i>';db2.title='Eliminar';db2.addEventListener('click',function(e){e.stopPropagation();delTool(tid);});hdr.appendChild(db2);
     hdr.insertAdjacentHTML('beforeend','<div class="mp" title="Avance: '+pct+'%"><div class="mf'+(pct===100?' full':'')+'" style="width:'+pct+'%"></div></div>');
-    hdr.insertAdjacentHTML('beforeend','<i class="ti ti-chevron-down cv" id="cv_'+tid+'"></i>');
+    hdr.insertAdjacentHTML('beforeend','<i class="ti ti-chevron-down cv'+(openTools.indexOf(tid)>=0?' open':'')+'" id="cv_'+tid+'"></i>');
     blk.appendChild(hdr);
-    var stList=document.createElement('div');stList.className='stl';stList.id='stl_'+tid;
+    var stList=document.createElement('div');stList.className='stl'+(openTools.indexOf(tid)>=0?' open':'');stList.id='stl_'+tid;
+    if(!Array.isArray(tool.subtasks)){tool.subtasks=[];}
     tool.subtasks.forEach(function(s){
       var sid=s.id;var stLate=!!(s.date&&!s.done&&new Date(s.date+'T23:59:59')<today);
       var row=document.createElement('div');row.className='str';row.id='st_'+s.id;
@@ -1915,11 +1926,52 @@ function renderTools(){
 }
 
 function saveNewP(){
-  var name=document.getElementById('pName').value.trim();if(!name){alert('Escribe el nombre');return;}
-  var team=[].slice.call(document.querySelectorAll('#pTeamCbs input:checked')).map(function(i){return i.value;});
-  if(!team.length){alert('Selecciona equipo');return;}
-  var p={id:'p'+Date.now(),name:name,start:document.getElementById('pStart').value,end:document.getElementById('pEnd').value,team:team};
-  projs.push(p);pd[p.id]=mkPD(p.id);save();buildSB();closePM();openProj(p.id);
+  try{
+    var name=document.getElementById('pName').value.trim();
+    if(!name){alert('Escribe el nombre');return;}
+    var team=[].slice.call(document.querySelectorAll('#pTeamCbs input:checked')).map(function(i){return i.value;});
+    if(!team.length){alert('Selecciona equipo');return;}
+    var p={id:'p'+Date.now(),name:name,start:document.getElementById('pStart').value,end:document.getElementById('pEnd').value,team:team};
+    projs.push(p);
+    pd[p.id]={tools:[]};
+
+    // Buscar Workprotec como plantilla
+    var workprotec=projs.find(function(proj){return proj.name==='Workprotec';});
+    var newTools=[];
+    if(workprotec&&pd[workprotec.id]){
+      var template=pdata(workprotec.id);
+      if(template&&template.tools&&Array.isArray(template.tools)){
+        template.tools.forEach(function(t){
+          if(!t||!t.num||!t.name)return;
+          var newTool={id:p.id+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name,person:'',
+            date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
+            recurrent:t.recurrent||'',link:t.link||'',subtasks:[]};
+          if(Array.isArray(t.subtasks)){
+            newTool.subtasks=t.subtasks.map(function(s){
+              if(!s)return null;
+              return{id:p.id+'_st_'+Math.random().toString(36).slice(2),
+                text:s.text||'',person:'',date:'',status:'Pendiente',
+                notes:s.notes||'',done:false,recurrent:s.recurrent||'',
+                link:s.link||'',priority:s.priority||''};
+            }).filter(function(s){return s!==null;});
+          }
+          newTools.push(newTool);
+        });
+      }
+      pd[p.id]={tools:newTools};
+    }else{
+      pd[p.id]=mkPD(p.id);
+    }
+    // Garantizar que pd[p.id] siempre tiene tools como array
+    if(!pd[p.id]||!pd[p.id].tools||!Array.isArray(pd[p.id].tools)){
+      pd[p.id]={tools:[]};
+    }
+    save();buildSB();closePM();
+    setTimeout(function(){openProj(p.id);},20);
+  }catch(e){
+    console.error('Error creating new project:',e);
+    alert('Error al crear proyecto: '+e.message);
+  }
 }
 
 function saveSt(){var t=findTool(eStids.tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===eStids.sid;});if(!s)return;var pv=s.person;s.text=document.getElementById('stDesc').value.trim()||s.text;s.person=document.getElementById('stPers').value;s.date=document.getElementById('stDate').value;s.due_date=document.getElementById('stDate').value;s.status=document.getElementById('stStat').value;s.done=s.status==='Completada';s.recurrent=document.getElementById('stRec')?document.getElementById('stRec').value:'';s.notes=document.getElementById('stNotes').value.trim();
@@ -2167,15 +2219,21 @@ function printTasks(){
   names.forEach(function(name){
     var mySubs=[];
     projs.forEach(function(p){
-      pdata(p.id).tools.forEach(function(t){
-        t.subtasks.forEach(function(s){
-          if(s.person===name&&s.status!=='Completada') mySubs.push({projName:p.name,toolNum:t.num,toolName:t.name,sub:s});
-        });
-        if(t.person===name&&t.subtasks.length===0)
+      if(!p||!p.id)return;
+      var pda=pdata(p.id);
+      if(!pda||!pda.tools||!Array.isArray(pda.tools))return;
+      pda.tools.forEach(function(t){
+        if(!t)return;
+        if(Array.isArray(t.subtasks)){
+          t.subtasks.forEach(function(s){
+            if(s&&s.person===name&&s.status!=='Completada') mySubs.push({projName:p.name,toolNum:t.num,toolName:t.name,sub:s});
+          });
+        }
+        if(t.person===name&&(!t.subtasks||!Array.isArray(t.subtasks)||t.subtasks.length===0))
           mySubs.push({projName:p.name,toolNum:t.num,toolName:t.name,sub:null,isToolOnly:true});
       });
     });
-    if(!mySubs.length)return;
+    if(!mySubs||!mySubs.length)return;
     var pend=mySubs.filter(function(x){return x.isToolOnly?false:x.sub&&!x.sub.done;}).length;
     var done2=mySubs.filter(function(x){return x.isToolOnly?false:x.sub&&x.sub.done;}).length;
     h+='<h2>'+name+' <span style="font-size:10px;font-weight:400;color:#5A5880">('+pend+' pendientes, '+done2+' hechas)</span></h2>';
@@ -2201,24 +2259,40 @@ function printTasks(){
   setTimeout(function(){win.print();},400);
 }
 function duplicateProj(pid){
-  var src=projs.find(function(p){return p.id===pid;});if(!src)return;
-  var newId='p'+Date.now();
-  var newName=src.name+' (copia)';
-  projs.push({id:newId,name:newName,start:'',end:'',team:src.team?src.team.slice():[]});
-  var srcData=pdata(pid);
-  pd[newId]={tools:srcData.tools.map(function(t){
-    return{id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name,person:t.person,
-      date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
-      recurrent:t.recurrent||'',link:t.link||'',
-      subtasks:t.subtasks.map(function(s){
-        return{id:newId+'_st_'+Math.random().toString(36).slice(2),
-          text:s.text,person:s.person||'',date:'',status:'Pendiente',
-          notes:s.notes||'',done:false,recurrent:s.recurrent||'',
-          link:s.link||'',priority:s.priority||''};
-      })};
-  })};
-  save();buildSB();openProj(newId);
-  showToast('Proyecto duplicado: '+newName);
+  try{
+    var src=projs.find(function(p){return p.id===pid;});
+    if(!src)return;
+    var newId='p'+Date.now();
+    var newName=src.name+' (copia)';
+    projs.push({id:newId,name:newName,start:src.start||'',end:src.end||'',team:src.team?src.team.slice():[]});
+    pd[newId]={tools:[]};
+    var srcData=pdata(pid);
+    var newTools=[];
+    if(srcData&&srcData.tools&&Array.isArray(srcData.tools)){
+      srcData.tools.forEach(function(t){
+        if(!t||!t.num||!t.name)return;
+        var newTool={id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name,person:t.person||'',
+          date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
+          recurrent:t.recurrent||'',link:t.link||'',subtasks:[]};
+        if(Array.isArray(t.subtasks)){
+          newTool.subtasks=t.subtasks.map(function(s){
+            if(!s)return null;
+            return{id:newId+'_st_'+Math.random().toString(36).slice(2),
+              text:s.text||'',person:s.person||'',date:'',status:'Pendiente',
+              notes:s.notes||'',done:false,recurrent:s.recurrent||'',
+              link:s.link||'',priority:s.priority||''};
+          }).filter(function(s){return s!==null;});
+        }
+        newTools.push(newTool);
+      });
+    }
+    pd[newId]={tools:newTools};
+    save();buildSB();
+    setTimeout(function(){openProj(newId);showToast('Proyecto duplicado: '+newName);},20);
+  }catch(e){
+    console.error('Error duplicating project:',e);
+    alert('Error al duplicar proyecto: '+e.message);
+  }
 }
 function nextRecDate(dateStr, recurrent){
   if(!dateStr||!recurrent)return '';
@@ -2231,19 +2305,12 @@ function nextRecDate(dateStr, recurrent){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 function renderToolsKeepOpen(){
-  // Guardar IDs de herramientas con stl open
-  var open=[];
+  // Guardar IDs de herramientas con stl open en variable global
+  openTools=[];
   document.querySelectorAll('.stl.open').forEach(function(el){
-    open.push(el.id.replace('stl_',''));
+    openTools.push(el.id.replace('stl_',''));
   });
   renderTools();
-  // Restaurar estado abierto
-  open.forEach(function(tid){
-    var stl=document.getElementById('stl_'+tid);
-    var cv=document.getElementById('cv_'+tid);
-    if(stl)stl.classList.add('open');
-    if(cv)cv.classList.add('open');
-  });
 }
 function autoSave() {
   try {
