@@ -805,23 +805,34 @@ function normalizeProjs(val){
   return Object.keys(val).map(function(k){return val[k];});
 }
 
+var firebaseUpdateInProgress=false;
 function setupRealtimeListeners(){
-  dbProjs.on('value',function(snap){
-    var d = snap.val();
-    if(d){
-      projs = normalizeProjs(d);
-      console.log('Firebase projs updated:', projs);
-      buildSB(); renderDash();
-    }
-  });
-  dbPd.on('value',function(snap){
-    var d = snap.val();
-    if(d){
-      pd = d;
-      console.log('Firebase pd updated:', pd);
-      renderDash();
-    }
-  });
+  // Los listeners solo se activan si Firebase está conectado (no en file://)
+  if(typeof dbProjs==='undefined'||!dbProjs)return;
+  try{
+    dbProjs.on('value',function(snap){
+      var d = snap.val();
+      if(d&&!firebaseUpdateInProgress){
+        projs = normalizeProjs(d);
+        console.log('Firebase projs updated:', projs);
+        buildSB(); renderDash();
+      }
+    });
+    dbPd.on('value',function(snap){
+      var d = snap.val();
+      if(d&&!firebaseUpdateInProgress){
+        console.log('Firebase pd updated:', d);
+        for(var key in d){
+          if(d.hasOwnProperty(key)){
+            pd[key]=d[key];
+          }
+        }
+        renderDash();
+      }
+    });
+  }catch(e){
+    console.log('Firebase listeners disabled (local file detected)');
+  }
 }
 let eTid=null, eStids=null;
 
@@ -856,36 +867,47 @@ function load(){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
   });
 
-  // Cargar desde Firebase una vez
-  var fbLoaded={projs:false,pd:false};
-  try{
-    dbProjs.once('value',function(snap){
-      var d = snap.val();
-      if(d){
-        projs = normalizeProjs(d);
-      }
-      fbLoaded.projs=true;
-      if(fbLoaded.projs && fbLoaded.pd){
-        buildSB();
-        renderDash();
-        setupRealtimeListeners();
-      }
-    });
-    dbPd.once('value',function(snap){
-      var d = snap.val();
-      if(d) pd = d;
-      fbLoaded.pd=true;
-      if(fbLoaded.projs && fbLoaded.pd){
-        buildSB();
-        renderDash();
-        setupRealtimeListeners();
-      }
-    });
-  }catch(e){
-    console.error('Firebase load error:', e);
-    buildSB();
+  // En local (file://), NO cargar desde Firebase - solo usar localStorage
+  // Cargar desde localStorage (ya se cargó arriba en window.onload)
+  buildSB();
+
+  // Restaurar el proyecto que estaba abierto
+  var savedCurP = localStorage.getItem('tkm9_curP');
+  if(savedCurP && proj(savedCurP)){
+    openProj(savedCurP);
+  } else {
     renderDash();
-    setupRealtimeListeners();
+  }
+
+  // SOLO inicializar Firebase listeners si NO estamos en local
+  if(location.protocol !== 'file:'){
+    var fbLoaded={projs:false,pd:false};
+    try{
+      dbProjs.once('value',function(snap){
+        var d = snap.val();
+        if(d){
+          projs = normalizeProjs(d);
+        }
+        fbLoaded.projs=true;
+        if(fbLoaded.projs && fbLoaded.pd){
+          buildSB();
+          renderDash();
+          setupRealtimeListeners();
+        }
+      });
+      dbPd.once('value',function(snap){
+        var d = snap.val();
+        if(d) pd = d;
+        fbLoaded.pd=true;
+        if(fbLoaded.projs && fbLoaded.pd){
+          buildSB();
+          renderDash();
+          setupRealtimeListeners();
+        }
+      });
+    }catch(e){
+      console.error('Firebase load error:', e);
+    }
   }
 
   setTimeout(restoreProjList,100);
@@ -893,10 +915,13 @@ function load(){
 var hasChanges=false;
 function save(){
   hasChanges=true;
+  firebaseUpdateInProgress=true;
+  setTimeout(function(){firebaseUpdateInProgress=false;},2000);
   try{
     localStorage.setItem('tkm9_p',JSON.stringify(projs));
     localStorage.setItem('tkm9_d',JSON.stringify(pd));
     localStorage.setItem('tkm9_t',JSON.stringify(TEAM));
+    localStorage.setItem('tkm9_curP',curP);
   }catch(e){
     console.error('No se pudo guardar en este navegador:', e);
     if(!window._storageWarned){
@@ -954,23 +979,28 @@ function showToast(msg){var t=document.getElementById('tst');if(!t)return;t.text
 function pSel(cur,fn){
   var p=proj();
   var opts='<option value="">Sin asignar</option>'+((p&&p.team)||[]).map(function(n){return'<option value="'+esc(n)+'"'+(cur===n?' selected':'')+'>'+esc(n)+'</option>';}).join('');
-  return'<select class="isl per'+(cur&&cur.length?'':' emp')+'" onchange="'+fn+'" onclick="event.stopPropagation()">'+opts+'</select>';
+  return"<select class='isl per"+(cur&&cur.length?'':' emp')+"' onchange='"+fn+"' onclick='event.stopPropagation()'>"+opts+'</select>';
 }
 function sSel(cur,fn){
   var cl=cur==='Completada'?'s-do':cur==='En curso'?'s-cu':'s-pe';
-  return'<select class="isl sta '+cl+'" onchange="'+fn+'" onclick="event.stopPropagation()">'
-    +'<option value="Pendiente"'+(cur==='Pendiente'?' selected':'')+'>Pendiente</option>'
-    +'<option value="En curso"'+(cur==='En curso'?' selected':'')+'>En curso</option>'
-    +'<option value="Completada"'+(cur==='Completada'?' selected':'')+'>Completada</option>'
+  return"<select class='isl sta "+cl+"' onchange='"+fn+"' onclick='event.stopPropagation()'>"
+    +"<option value='Pendiente'"+(cur==='Pendiente'?' selected':'')+">Pendiente</option>"
+    +"<option value='En curso'"+(cur==='En curso'?' selected':'')+">En curso</option>"
+    +"<option value='Completada'"+(cur==='Completada'?' selected':'')+">Completada</option>"
     +'</select>';
 }
 function dInp(cur,late,fn){
   var id='dw'+Math.random().toString(36).slice(2,7);
-  return '<div class="dw" onclick="event.stopPropagation();var el=document.getElementById(\''+id+'\');if(el.showPicker)el.showPicker();else el.click();">'
+  var html='<div class="dw" onclick="event.stopPropagation();var el=document.getElementById(\''+id+'\');if(el.showPicker)el.showPicker();else el.click();">'
     +'<i class="ti ti-calendar" style="font-size:10px;color:'+(late?'var(--rd)':'var(--tx3)')+'"></i>'
     +'<span class="dl'+(late?' late':'')+'">'+(cur?fmt(cur):'Sin fecha')+'</span>'
-    +'<input id="'+id+'" type="date" value="'+(cur||'')+'" onchange="'+fn+'" style="position:absolute;width:0;height:0;opacity:0;border:none;padding:0">'
+    +'<input id="'+id+'" type="date" value="'+(cur||'')+'" style="position:absolute;width:0;height:0;opacity:0;border:none;padding:0">'
     +'</div>';
+  setTimeout(function(){
+    var el=document.getElementById(id);
+    if(el){el.addEventListener('change',function(){eval(fn);},false);}
+  },10);
+  return html;
 }
 
 // ─ INLINE SETTERS ─
@@ -1324,7 +1354,7 @@ function renderDashTasks(){
           +'<option value="media"'+(prioVal==='media'?' selected':'')+'>🟡</option>'
           +'<option value="baja"'+(prioVal==='baja'?' selected':'')+'>🟢</option>'
           +'</select>'
-          +(function(){var _id='dwd_'+s.id;return '<div class="dw" style="cursor:pointer;padding:4px 8px;min-width:80px" onclick="event.stopPropagation();var el=document.getElementById(\''+_id+'\');if(el.showPicker)el.showPicker();else el.click();">'+'<i class="ti ti-calendar" style="font-size:10px;color:'+(late2?'#C02020':'#9896B8')+'" ></i>'+'<span class="dl'+(late2?' late':'')+'" style="pointer-events:none">'+(s.date?fmt(s.date):'Sin fecha')+(late2?' !':'')+'</span>'+'<input id="'+_id+'" type="date" value="'+(s.date||'')+"\" onchange=\"iSDDash('"+x.projId+"','"+x.toolNum+"','"+s.id+"',this.value)\" style=\"position:absolute;width:1px;height:1px;opacity:0\">"+'</div>';})()          +'<select class="isl sta '+stCl+'" onchange="iSSDash(\''+x.projId+'\',\''+x.toolNum+'\',\''+s.id+'\',this.value)" onclick="event.stopPropagation()" style="font-size:9px">'
+          +(function(){var _id='dwd_'+s.id;return '<div class="dw" style="cursor:pointer;padding:4px 8px;min-width:80px" onclick="event.stopPropagation();var el=document.getElementById(\''+_id+'\');if(el.showPicker)el.showPicker();else el.click();">'+'<i class="ti ti-calendar" style="font-size:10px;color:'+(late2?'#C02020':'#9896B8')+'" ></i>'+'<span class="dl'+(late2?' late':'')+'" style="pointer-events:none">'+(s.date?fmt(s.date):'Sin fecha')+(late2?' !':'')+'</span>'+'<input id="'+_id+'" type="date" value="'+(s.date||'')+"\" onchange=\"iSDDash('"+x.projId+"','"+x.toolNum+"','"+s.id+"',this.value)\" style=\"position:absolute;width:1px;height:1px;opacity:0\">"+'</div>';})()          +'<select class="isl sta '+stCl+'" onchange="iSSDash(\''+x.projId.replace(/'/g,"\\'")+'\',"'+x.toolNum+'","'+s.id+'",this.value)" onclick="event.stopPropagation()" style="font-size:9px">'
             +'<option value="Pendiente"'+(s.status==='Pendiente'?' selected':'')+'>Pendiente</option>'
             +'<option value="En curso"'+(s.status==='En curso'?' selected':'')+'>En curso</option>'
             +'<option value="Completada"'+(s.status==='Completada'?' selected':'')+'>Completada</option>'
@@ -1750,7 +1780,8 @@ function renderGantt(){
 
 function renderPH(){
   var p=proj();if(!p)return;
-  var tools=pdata().tools;
+  var pd_data=pdata();if(!pd_data||!pd_data.tools)return;
+  var tools=pd_data.tools;
   var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
   var curso=tools.filter(function(t){return tStat(t)==='En curso';}).length;
   var pct=tools.length?Math.round(done/tools.length*100):0;
@@ -1819,8 +1850,8 @@ function renderTools(){
     // Columnas 3-5 (prioridad/recurrencia/enlace) no aplican a nivel herramienta: se reservan vacias
     // para que persona/estado/fecha caigan en la misma columna que en las subtareas.
     var metaPh=document.createElement('span');metaPh.style.cssText='visibility:hidden';hdr.appendChild(metaPh);
-    hdr.insertAdjacentHTML('beforeend',pSel(tool.person,'iTP(\''+tid+'\',this.value)'));
-    hdr.insertAdjacentHTML('beforeend',sSel(st,'iTS(\''+tid+'\',this.value)'));
+    hdr.insertAdjacentHTML('beforeend',pSel(tool.person,'iTP("'+tid+'",this.value)'));
+    hdr.insertAdjacentHTML('beforeend',sSel(st,'iTS("'+tid+'",this.value)'));
     // Calcular fecha fin desde schedule (la fecha de inicio sigue editable desde "Editar")
     var p2=proj();
     var allToolsList=pdata().tools;
@@ -1910,9 +1941,9 @@ function renderTools(){
         metaCell.appendChild(lnkBtn);
       }
       row.appendChild(metaCell);
-      row.insertAdjacentHTML('beforeend',pSel(s.person,'iSP(\''+tid+'\',\''+sid+'\',this.value)'));
-      row.insertAdjacentHTML('beforeend',sSel(s.status,'iSS(\''+tid+'\',\''+sid+'\',this.value)'));
-      row.insertAdjacentHTML('beforeend',dInp(s.date||s.due_date,stLate,'iSD(\''+tid+'\',\''+sid+'\',this.value)'));
+      row.insertAdjacentHTML('beforeend',pSel(s.person,'iSP("'+tid+'","'+sid+'",this.value)'));
+      row.insertAdjacentHTML('beforeend',sSel(s.status,'iSS("'+tid+'","'+sid+'",this.value)'));
+      row.insertAdjacentHTML('beforeend',dInp(s.date||s.due_date,stLate,'iSD("'+tid+'","'+sid+'",this.value)'));
       var sedit=document.createElement('button');sedit.className='ib';sedit.innerHTML='<i class="ti ti-edit"></i>';sedit.addEventListener('click',function(e){e.stopPropagation();openMoSt(tid,sid);});row.appendChild(sedit);
       var sdel=document.createElement('button');sdel.className='ib';sdel.innerHTML='<i class="ti ti-trash"></i>';sdel.addEventListener('click',function(e){e.stopPropagation();delSt(tid,sid);});row.appendChild(sdel);
       stList.appendChild(row);
