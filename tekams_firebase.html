@@ -788,6 +788,7 @@ firebase.initializeApp(firebaseConfig);
 var dbProjs = firebase.database().ref('projects');
 var dbPd = firebase.database().ref('projectsData');
 var lastSaveTime=0; // Timestamp del último cambio local
+var editTimeout=null; // Timeout para dejar de editar
 
 // ─ STORAGE ─
 function reorderNums(tools){
@@ -855,6 +856,10 @@ var hasChanges=false;
 function save(){
   hasChanges=true;
   lastSaveTime=Date.now(); // Guardar timestamp del cambio local
+  // Resetear timeout: usuario está activamente editando
+  clearTimeout(editTimeout);
+  editTimeout=setTimeout(function(){editTimeout=null;},10000); // Dejar de considerar "editing" después de 10 segundos
+
   try{
     localStorage.setItem('tkm9_p',JSON.stringify(projs));
     localStorage.setItem('tkm9_d',JSON.stringify(pd));
@@ -871,6 +876,7 @@ function save(){
   try{
     dbProjs.set(projs);
     dbPd.set(pd);
+    hasChanges=false; // Resetear flag después de guardar
   }catch(e){
     console.error('Firebase save error:', e);
   }
@@ -897,9 +903,9 @@ function setupRealtimeListeners(){
   try{
     dbProjs.on('value',function(snap){
       var d=snap.val();
-      // Solo actualizar si pasaron más de 5 segundos desde el último cambio local
-      // No renderizar, solo actualizar datos
-      if(d&&(Date.now()-lastSaveTime>5000)){
+      // Solo actualizar si NO estamos editando actualmente (editTimeout es null)
+      // y pasaron más de 10 segundos desde el último cambio
+      if(d&&!editTimeout&&(Date.now()-lastSaveTime>10000)){
         var normalized=normalizeProjs(d);
         if(normalized&&Array.isArray(normalized)&&normalized.length){
           projs=normalized;
@@ -908,8 +914,8 @@ function setupRealtimeListeners(){
     });
     dbPd.on('value',function(snap){
       var d=snap.val();
-      // Solo actualizar datos, no renderizar
-      if(d&&(Date.now()-lastSaveTime>5000)&&typeof d==='object'){
+      // Solo actualizar datos si NO estamos editando
+      if(d&&!editTimeout&&(Date.now()-lastSaveTime>10000)&&typeof d==='object'){
         pd=d;
       }
     });
