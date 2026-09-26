@@ -6,6 +6,8 @@
 <title>Tekams Jump</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <style>
 
 
@@ -771,6 +773,22 @@ const JUMP_SCHEDULE = {
 let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
 let eTid=null, eStids=null;
 
+// ─ FIREBASE ─
+var firebaseConfig = {
+  apiKey: "AIzaSyCcPi21izz0sSaIgPZE7EewLZG8-RfFeUT1",
+  authDomain: "tekams.firebaseapp.com",
+  databaseURL: "https://tekams-default-rtdb.firebaseio.com",
+  projectId: "tekams",
+  storageBucket: "tekams.firebasestorage.app",
+  messagingSenderId: "848634111773",
+  appId: "1:848634111773:web:38dcbec45439ca96c3a3f4",
+  measurementId: "G-S2R1CD5DBL"
+};
+firebase.initializeApp(firebaseConfig);
+var dbProjs = firebase.database().ref('projects');
+var dbPd = firebase.database().ref('projectsData');
+var lastSaveTime=0; // Timestamp del último cambio local
+
 // ─ STORAGE ─
 function reorderNums(tools){
   // El primer tool es siempre Plan Director (00), el resto 01, 02...
@@ -778,6 +796,12 @@ function reorderNums(tools){
     t.num=String(i).padStart(2,'0');
   });
 }
+function normalizeProjs(val){
+  if(!val) return [];
+  if(Array.isArray(val)) return val;
+  return Object.keys(val).map(function(k){return val[k];});
+}
+
 function load(){
   // Si el archivo lleva datos incrustados (los deja "Guardar" al exportar/sobrescribir),
   // usarlos directamente. No depender de localStorage para esto: algunos navegadores lo
@@ -802,10 +826,35 @@ function load(){
   Object.keys(pd).forEach(function(pid){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
   });
+
+  // Sincronizar con Firebase en background (sin esperar)
+  syncWithFirebase();
+}
+
+function syncWithFirebase(){
+  try{
+    dbProjs.once('value',function(snap){
+      var d=snap.val();
+      if(d){
+        projs=normalizeProjs(d);
+        buildSB();
+      }
+    });
+    dbPd.once('value',function(snap){
+      var d=snap.val();
+      if(d)pd=d;
+      renderDash();
+      setupRealtimeListeners();
+    });
+  }catch(e){
+    console.error('Firebase sync error:', e);
+    setupRealtimeListeners();
+  }
 }
 var hasChanges=false;
 function save(){
   hasChanges=true;
+  lastSaveTime=Date.now(); // Guardar timestamp del cambio local
   try{
     localStorage.setItem('tkm9_p',JSON.stringify(projs));
     localStorage.setItem('tkm9_d',JSON.stringify(pd));
@@ -817,6 +866,13 @@ function save(){
       window._storageWarned=true;
       showToast('Este navegador no esta guardando los cambios. Usa "Guardar" para descargar una copia.');
     }
+  }
+  // Guardar en Firebase también
+  try{
+    dbProjs.set(projs);
+    dbPd.set(pd);
+  }catch(e){
+    console.error('Firebase save error:', e);
   }
 }
 function mkPD(pid){
@@ -835,6 +891,29 @@ function seed(){
   ];
   pd['p1']=mkPD('p1'); pd['p2']=mkPD('p2');
   save();
+}
+
+function setupRealtimeListeners(){
+  try{
+    dbProjs.on('value',function(snap){
+      var d=snap.val();
+      // Solo actualizar si los datos de Firebase son más nuevos que nuestro último cambio local
+      // O si pasaron más de 5 segundos desde el último cambio local
+      if(d&&(Date.now()-lastSaveTime>5000)){
+        projs=normalizeProjs(d);
+        buildSB();
+      }
+    });
+    dbPd.on('value',function(snap){
+      var d=snap.val();
+      if(d&&(Date.now()-lastSaveTime>5000)){
+        pd=d;
+        renderDash();
+      }
+    });
+  }catch(e){
+    console.error('Firebase listener error:', e);
+  }
 }
 
 // ─ HELPERS ─
@@ -2150,7 +2229,10 @@ try{
   document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;top:0;left:0;right:0;background:#D94F2B;color:#fff;padding:8px 16px;font-size:12px;text-align:center;z-index:9999">Este navegador no esta guardando los cambios automaticamente (puede pasar al abrir el archivo con doble clic). Usa el boton "Guardar" arriba a la derecha para no perder tu trabajo.</div>');
 }
 try{
-  load();buildSB();if(curP && proj(curP)){openProj(curP);} else {renderDash();}
+  load();
+  // Renderizar primero desde localStorage
+  buildSB();
+  if(curP && proj(curP)){openProj(curP);} else {renderDash();}
 }catch(e){
   console.error('Init error:',e);
   document.body.innerHTML+='<div style="position:fixed;bottom:20px;right:20px;background:#C02020;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999">Error: '+e.message+'</div>';
