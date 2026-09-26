@@ -772,6 +772,7 @@ const JUMP_SCHEDULE = {
 
 let projs=[], pd={}, curP=null, filt='todas', notifs=[], dashFilt='', dashTab='projs', curPTab='tools';
 let eTid=null, eStids=null;
+const ME='Jose'; // Tu ID de usuario
 
 // ─ FIREBASE ─
 var firebaseConfig = {
@@ -833,6 +834,7 @@ function load(){
 }
 
 function syncWithFirebase(){
+  // Cargar datos iniciales de Firebase
   try{
     dbProjs.once('value',function(snap){
       var d=snap.val();
@@ -843,8 +845,10 @@ function syncWithFirebase(){
     });
     dbPd.once('value',function(snap){
       var d=snap.val();
-      if(d)pd=d;
-      renderDash();
+      if(d){
+        pd=d;
+        renderDash();
+      }
       setupRealtimeListeners();
     });
   }catch(e){
@@ -901,22 +905,23 @@ function seed(){
 
 function setupRealtimeListeners(){
   try{
+    // Escuchar cambios en proyectos
     dbProjs.on('value',function(snap){
       var d=snap.val();
-      // Solo actualizar si NO estamos editando actualmente (editTimeout es null)
-      // y pasaron más de 10 segundos desde el último cambio
-      if(d&&!editTimeout&&(Date.now()-lastSaveTime>10000)){
-        var normalized=normalizeProjs(d);
-        if(normalized&&Array.isArray(normalized)&&normalized.length){
-          projs=normalized;
-        }
+      // Ignorar cambios si estamos editando actualmente
+      if(!editTimeout&&d){
+        projs=normalizeProjs(d);
+        buildSB();
       }
     });
+
+    // Escuchar cambios en datos de proyectos
     dbPd.on('value',function(snap){
       var d=snap.val();
-      // Solo actualizar datos si NO estamos editando
-      if(d&&!editTimeout&&(Date.now()-lastSaveTime>10000)&&typeof d==='object'){
+      // Ignorar cambios si estamos editando actualmente
+      if(!editTimeout&&d){
         pd=d;
+        renderDash();
       }
     });
   }catch(e){
