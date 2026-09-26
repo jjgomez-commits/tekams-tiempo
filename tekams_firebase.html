@@ -897,18 +897,20 @@ function setupRealtimeListeners(){
   try{
     dbProjs.on('value',function(snap){
       var d=snap.val();
-      // Solo actualizar si los datos de Firebase son más nuevos que nuestro último cambio local
-      // O si pasaron más de 5 segundos desde el último cambio local
+      // Solo actualizar si pasaron más de 5 segundos desde el último cambio local
+      // No renderizar, solo actualizar datos
       if(d&&(Date.now()-lastSaveTime>5000)){
-        projs=normalizeProjs(d);
-        buildSB();
+        var normalized=normalizeProjs(d);
+        if(normalized&&Array.isArray(normalized)&&normalized.length){
+          projs=normalized;
+        }
       }
     });
     dbPd.on('value',function(snap){
       var d=snap.val();
-      if(d&&(Date.now()-lastSaveTime>5000)){
+      // Solo actualizar datos, no renderizar
+      if(d&&(Date.now()-lastSaveTime>5000)&&typeof d==='object'){
         pd=d;
-        renderDash();
       }
     });
   }catch(e){
