@@ -803,31 +803,43 @@ function normalizeProjs(val){
 }
 
 function load(){
-  // Cargar de localStorage PRIMERO (tiene prioridad)
-  // Solo usar __D si localStorage está vacío
-  try{var r=localStorage.getItem('tkm9_p');if(r)projs=JSON.parse(r);}catch(e){}
-  try{var r=localStorage.getItem('tkm9_d');if(r)pd=JSON.parse(r);}catch(e){}
+  console.log('LOAD: Iniciando...');
+  // SOLO cargar de localStorage, NUNCA de __D
+  try{
+    var r=localStorage.getItem('tkm9_p');
+    if(r){
+      projs=JSON.parse(r);
+      console.log('LOAD: Cargado projs de localStorage, length=',projs.length);
+    }
+  }catch(e){
+    console.error('LOAD: Error cargando projs:',e);
+  }
 
-  // Si localStorage estaba vacío, cargar de __D (datos incrustados)
-  if(!projs.length){
-    try{
-      if(typeof __D!=='undefined'&&__D&&__D.projs&&__D.projs.length){
-        projs=__D.projs;
-        pd=__D.pd||{};
-      }
-    }catch(e){}
+  try{
+    var r=localStorage.getItem('tkm9_d');
+    if(r){
+      pd=JSON.parse(r);
+      console.log('LOAD: Cargado pd de localStorage');
+    }
+  }catch(e){
+    console.error('LOAD: Error cargando pd:',e);
   }
 
   try{var r=localStorage.getItem('tkm9_t');if(r)TEAM=JSON.parse(r);}catch(e){}
   try{var r=localStorage.getItem('tkm9_curP');if(r)curP=r;}catch(e){}
-  if(!projs.length)seed();
 
-  // Reordenar números en caso de datos viejos
+  // Si localStorage está vacío, crear datos iniciales
+  if(!projs.length){
+    console.log('LOAD: localStorage vacío, creando datos iniciales con seed()');
+    seed();
+  }
+
+  // Reordenar números
   Object.keys(pd).forEach(function(pid){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
   });
 
-  // Sincronizar con Firebase en background (sin esperar)
+  console.log('LOAD: Completado. projs.length=',projs.length);
   syncWithFirebase();
 }
 
@@ -838,13 +850,15 @@ function syncWithFirebase(){
 var hasChanges=false;
 function save(){
   hasChanges=true;
+  console.log('SAVE: Guardando datos en localStorage...');
   try{
     localStorage.setItem('tkm9_p',JSON.stringify(projs));
     localStorage.setItem('tkm9_d',JSON.stringify(pd));
     localStorage.setItem('tkm9_t',JSON.stringify(TEAM));
     localStorage.setItem('tkm9_curP',curP);
+    console.log('SAVE: Datos guardados exitosamente');
   }catch(e){
-    console.error('No se pudo guardar en este navegador:', e);
+    console.error('SAVE: Error al guardar:', e);
     if(!window._storageWarned){
       window._storageWarned=true;
       showToast('Este navegador no esta guardando los cambios. Usa "Guardar" para descargar una copia.');
