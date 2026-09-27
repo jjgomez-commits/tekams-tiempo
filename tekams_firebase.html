@@ -833,26 +833,12 @@ function load(){
 }
 
 function syncWithFirebase(){
-  // Cargar datos iniciales de Firebase
+  // NO cargar de Firebase al iniciar, solo mantener sincronización en vivo
+  // Los datos locales (localStorage) tienen prioridad
   try{
-    dbProjs.once('value',function(snap){
-      var d=snap.val();
-      if(d){
-        projs=normalizeProjs(d);
-        buildSB();
-      }
-    });
-    dbPd.once('value',function(snap){
-      var d=snap.val();
-      if(d){
-        pd=d;
-        renderDash();
-      }
-      setupRealtimeListeners();
-    });
+    setupRealtimeListeners();
   }catch(e){
     console.error('Firebase sync error:', e);
-    setupRealtimeListeners();
   }
 }
 var hasChanges=false;
@@ -909,8 +895,11 @@ function setupRealtimeListeners(){
       var d=snap.val();
       // Ignorar cambios si estamos editando actualmente
       if(!editTimeout&&d){
-        projs=normalizeProjs(d);
-        buildSB();
+        var normalized=normalizeProjs(d);
+        if(normalized&&Array.isArray(normalized)){
+          projs=normalized;
+          try{buildSB();}catch(e){console.error('buildSB error:',e);}
+        }
       }
     });
 
@@ -918,9 +907,9 @@ function setupRealtimeListeners(){
     dbPd.on('value',function(snap){
       var d=snap.val();
       // Ignorar cambios si estamos editando actualmente
-      if(!editTimeout&&d){
+      if(!editTimeout&&d&&typeof d==='object'){
         pd=d;
-        renderDash();
+        try{renderDash();}catch(e){console.error('renderDash error:',e);}
       }
     });
   }catch(e){
