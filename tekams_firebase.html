@@ -803,25 +803,25 @@ function normalizeProjs(val){
 }
 
 function load(){
-  // Si el archivo lleva datos incrustados (los deja "Guardar" al exportar/sobrescribir),
-  // usarlos directamente. No depender de localStorage para esto: algunos navegadores lo
-  // bloquean o no lo conservan al abrir un archivo con doble clic (file://), y antes eso
-  // hacia que los datos incrustados se perdieran en silencio al reabrir.
-  var loadedFromFile=false;
-  try{
-    if(typeof __D!=='undefined'&&__D&&__D.projs&&__D.projs.length){
-      projs=__D.projs;
-      pd=__D.pd||{};
-      loadedFromFile=true;
-    }
-  }catch(e){}
-  if(!loadedFromFile){
-    try{var r=localStorage.getItem('tkm9_p');if(r)projs=JSON.parse(r);}catch(e){}
-    try{var r=localStorage.getItem('tkm9_d');if(r)pd=JSON.parse(r);}catch(e){}
+  // Cargar de localStorage PRIMERO (tiene prioridad)
+  // Solo usar __D si localStorage está vacío
+  try{var r=localStorage.getItem('tkm9_p');if(r)projs=JSON.parse(r);}catch(e){}
+  try{var r=localStorage.getItem('tkm9_d');if(r)pd=JSON.parse(r);}catch(e){}
+
+  // Si localStorage estaba vacío, cargar de __D (datos incrustados)
+  if(!projs.length){
+    try{
+      if(typeof __D!=='undefined'&&__D&&__D.projs&&__D.projs.length){
+        projs=__D.projs;
+        pd=__D.pd||{};
+      }
+    }catch(e){}
   }
+
   try{var r=localStorage.getItem('tkm9_t');if(r)TEAM=JSON.parse(r);}catch(e){}
   try{var r=localStorage.getItem('tkm9_curP');if(r)curP=r;}catch(e){}
   if(!projs.length)seed();
+
   // Reordenar números en caso de datos viejos
   Object.keys(pd).forEach(function(pid){
     if(pd[pid]&&pd[pid].tools)reorderNums(pd[pid].tools);
