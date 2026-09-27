@@ -784,11 +784,10 @@ var firebaseConfig = {
   appId: "1:848634111773:web:38dcbec45439ca96c3a3f4",
   measurementId: "G-S2R1CD5DBL"
 };
-firebase.initializeApp(firebaseConfig);
-var dbProjs = firebase.database().ref('projects');
-var dbPd = firebase.database().ref('projectsData');
-var lastSaveTime=0; // Timestamp del último cambio local
-var editTimeout=null; // Timeout para dejar de editar
+// Firebase inicializado pero deshabilitado temporalmente
+// firebase.initializeApp(firebaseConfig);
+// var dbProjs = firebase.database().ref('projects');
+// var dbPd = firebase.database().ref('projectsData');
 
 // ─ STORAGE ─
 function reorderNums(tools){
@@ -833,22 +832,12 @@ function load(){
 }
 
 function syncWithFirebase(){
-  // NO cargar de Firebase al iniciar, solo mantener sincronización en vivo
-  // Los datos locales (localStorage) tienen prioridad
-  try{
-    setupRealtimeListeners();
-  }catch(e){
-    console.error('Firebase sync error:', e);
-  }
+  // Firebase deshabilitado temporalmente - solo localStorage
+  // En el futuro: aquí irá la sincronización con Firebase
 }
 var hasChanges=false;
 function save(){
   hasChanges=true;
-  lastSaveTime=Date.now(); // Guardar timestamp del cambio local
-  // Resetear timeout: usuario está activamente editando
-  clearTimeout(editTimeout);
-  editTimeout=setTimeout(function(){editTimeout=null;},10000); // Dejar de considerar "editing" después de 10 segundos
-
   try{
     localStorage.setItem('tkm9_p',JSON.stringify(projs));
     localStorage.setItem('tkm9_d',JSON.stringify(pd));
@@ -861,14 +850,7 @@ function save(){
       showToast('Este navegador no esta guardando los cambios. Usa "Guardar" para descargar una copia.');
     }
   }
-  // Guardar en Firebase también
-  try{
-    dbProjs.set(projs);
-    dbPd.set(pd);
-    hasChanges=false; // Resetear flag después de guardar
-  }catch(e){
-    console.error('Firebase save error:', e);
-  }
+  hasChanges=false;
 }
 function mkPD(pid){
   return{tools:JUMP.map(function(j){return{
@@ -889,32 +871,9 @@ function seed(){
 }
 
 function setupRealtimeListeners(){
-  try{
-    // Escuchar cambios en proyectos
-    dbProjs.on('value',function(snap){
-      var d=snap.val();
-      // Ignorar cambios si estamos editando actualmente
-      if(!editTimeout&&d){
-        var normalized=normalizeProjs(d);
-        if(normalized&&Array.isArray(normalized)){
-          projs=normalized;
-          try{buildSB();}catch(e){console.error('buildSB error:',e);}
-        }
-      }
-    });
-
-    // Escuchar cambios en datos de proyectos
-    dbPd.on('value',function(snap){
-      var d=snap.val();
-      // Ignorar cambios si estamos editando actualmente
-      if(!editTimeout&&d&&typeof d==='object'){
-        pd=d;
-        try{renderDash();}catch(e){console.error('renderDash error:',e);}
-      }
-    });
-  }catch(e){
-    console.error('Firebase listener error:', e);
-  }
+  // Firebase listeners deshabilitados temporalmente
+  // En el futuro: sincronización en tiempo real con Firebase
+  console.log('Firebase listeners ready (disabled)');
 }
 
 // ─ HELPERS ─
