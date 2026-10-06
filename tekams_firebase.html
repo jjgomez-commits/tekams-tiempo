@@ -273,13 +273,13 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 .tool-range-chip:hover{background:#dddaf5;border-color:#2A2963}
 .tool-range-chip.no-dates{background:#F7F6FC;color:#9896B8;border-color:var(--bd);font-style:italic}
 .tool-range-chip i{font-size:11px;flex-shrink:0}
-/* ── POPOVER FECHAS HERRAMIENTA ── */
-.date-popover{position:absolute;top:calc(100% + 6px);right:0;z-index:200;background:#fff;border:1px solid var(--bd-md);border-radius:12px;padding:.75rem;box-shadow:0 4px 16px rgba(42,41,99,.15),0 12px 40px rgba(42,41,99,.1);min-width:260px;display:none}
-.date-popover.open{display:block}
-.date-popover .dp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.date-popover label{display:block;font-size:9px;font-weight:700;color:#5A5880;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.date-popover input[type=date]{width:100%;font-size:11px;font-family:'DM Mono',monospace;padding:5px 8px;border-radius:8px;border:1px solid var(--bd-md);background:#F7F6FC;color:#1A1940;outline:none;cursor:pointer}
-.date-popover input[type=date]:focus{border-color:var(--bl-mid);background:#fff}
+/* ── POPOVER FECHAS HERRAMIENTA (global, fixed) ── */
+#tool-date-popover{position:fixed;z-index:9999;background:#fff;border:1px solid var(--bd-md);border-radius:12px;padding:.75rem;box-shadow:0 4px 16px rgba(42,41,99,.15),0 12px 40px rgba(42,41,99,.1);min-width:260px;display:none}
+#tool-date-popover.open{display:block}
+#tool-date-popover .dp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#tool-date-popover label{display:block;font-size:9px;font-weight:700;color:#5A5880;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+#tool-date-popover input[type=date]{width:100%;font-size:11px;font-family:'DM Mono',monospace;padding:5px 8px;border-radius:8px;border:1px solid var(--bd-md);background:#F7F6FC;color:#1A1940;outline:none;cursor:pointer}
+#tool-date-popover input[type=date]:focus{border-color:var(--bl-mid);background:#fff}
 /* ── DOS CHIPS FECHA TAREA ── */
 .task-dates-wrap{display:flex;gap:4px;align-items:center;flex-wrap:nowrap}
 .task-date-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-family:'DM Mono',monospace;font-weight:600;cursor:pointer;transition:all .15s;position:relative;white-space:nowrap;border:1px solid transparent}
@@ -1068,23 +1068,56 @@ function dualDateChips(tid,sid,intDate,cliDate,intLate){
   return chip1+chip2;
 }
 
-// Popover de fechas de herramienta
-function toggleDatePopover(popId){
-  // Cerrar cualquier otro popover abierto
-  document.querySelectorAll('.date-popover.open').forEach(function(p){
-    if(p.id!==popId)p.classList.remove('open');
-  });
-  var pop=document.getElementById(popId);
-  if(pop)pop.classList.toggle('open');
+// Popover global de fechas de herramienta
+function _ensureToolDatePopover(){
+  var pop=document.getElementById('tool-date-popover');
+  if(!pop){
+    pop=document.createElement('div');
+    pop.id='tool-date-popover';
+    pop.addEventListener('click',function(e){e.stopPropagation();});
+    document.body.appendChild(pop);
+  }
+  return pop;
+}
+function toggleDatePopover(tid, chipEl){
+  var pop=_ensureToolDatePopover();
+  // Si ya está abierto para este tid, cerrar
+  if(pop.classList.contains('open') && pop.dataset.tid===tid){
+    pop.classList.remove('open');
+    return;
+  }
+  // Obtener valores actuales
+  var t=findTool(tid);
+  var sv=t?t.startDate||t.ganttStart||'':'';
+  var ev=t?t.endDate||t.date||'':'';
+  // Renderizar contenido
+  pop.dataset.tid=tid;
+  pop.innerHTML='<div class="dp-row">'
+    +'<div><label>Fecha Inicio</label><input type="date" id="gdps" value="'+esc(sv)+'" onclick="event.stopPropagation()"></div>'
+    +'<div><label>Fecha Fin</label><input type="date" id="gdpe" value="'+esc(ev)+'" onclick="event.stopPropagation()"></div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'
+    +'<button onclick="event.stopPropagation();saveDatePopover(\''+tid+'\')" style="padding:4px 12px;background:#2A2963;color:#fff;border:none;border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Guardar</button>'
+    +'<button onclick="event.stopPropagation();clearDatePopover(\''+tid+'\')" style="padding:4px 10px;background:#F7F6FC;color:#5A5880;border:1px solid rgba(42,41,99,.15);border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Limpiar</button>'
+    +'</div>';
+  // Posicionar debajo del chip
+  var rect=chipEl.getBoundingClientRect();
+  pop.style.top=(rect.bottom+6)+'px';
+  // Alinear a la derecha del chip, sin salirse de la ventana
+  var popW=264;
+  var left=rect.right-popW;
+  if(left<8)left=8;
+  pop.style.left=left+'px';
+  pop.classList.add('open');
 }
 function saveDatePopover(tid){
   var t=findTool(tid);if(!t)return;
-  var sv=document.getElementById('dps_'+tid);
-  var ev=document.getElementById('dpe_'+tid);
+  var sv=document.getElementById('gdps');
+  var ev=document.getElementById('gdpe');
   if(sv){t.startDate=sv.value;t.ganttStart=sv.value;}
   if(ev){t.endDate=ev.value;t.date=ev.value;}
   save();
-  var pop=document.getElementById('dpop_'+tid);
+  var pop=document.getElementById('tool-date-popover');
   if(pop)pop.classList.remove('open');
   renderToolsKeepOpen();
 }
@@ -1092,13 +1125,16 @@ function clearDatePopover(tid){
   var t=findTool(tid);if(!t)return;
   t.startDate='';t.ganttStart='';t.endDate='';t.date='';
   save();
-  var pop=document.getElementById('dpop_'+tid);
+  var pop=document.getElementById('tool-date-popover');
   if(pop)pop.classList.remove('open');
   renderToolsKeepOpen();
 }
-// Cerrar popovers al clicar fuera
-document.addEventListener('click',function(){
-  document.querySelectorAll('.date-popover.open').forEach(function(p){p.classList.remove('open');});
+// Cerrar popover al clicar fuera
+document.addEventListener('click',function(e){
+  var pop=document.getElementById('tool-date-popover');
+  if(pop&&pop.classList.contains('open')&&!pop.contains(e.target)&&!e.target.closest('.tool-range-chip')){
+    pop.classList.remove('open');
+  }
 });
 
 // ─ INLINE SELECTS ─
@@ -2026,7 +2062,6 @@ function renderTools(){
     var calcd=calcToolDates(tool, p2?p2.start:'', tIdx>=0?tIdx:0);
     var dispStart=tool.startDate||tool.ganttStart||calcd.start||'';
     var dispEnd=tool.endDate||tool.date||calcd.end||'';
-    var popId='dpop_'+tid;
     var chipWrap=document.createElement('div');chipWrap.style.cssText='position:relative;display:inline-flex;align-items:center';
     var chipHasDate=!!(dispStart||dispEnd);
     var chipTxt=chipHasDate?(dispStart&&dispEnd?fmtShort(dispStart)+' — '+fmtShort(dispEnd):(dispStart?fmtShort(dispStart):(dispEnd?fmtShort(dispEnd):'Sin fechas'))):'Sin fechas';
@@ -2034,20 +2069,8 @@ function renderTools(){
     chip.className='tool-range-chip'+(chipHasDate?'':' no-dates');
     chip.innerHTML='<i class="ti ti-calendar-range"></i><span>'+esc(chipTxt)+'</span>';
     chip.title='Clic para editar fechas de la herramienta';
-    chip.addEventListener('click',function(e){e.stopPropagation();toggleDatePopover(popId);});
+    chip.addEventListener('click',function(e){e.stopPropagation();toggleDatePopover(tid, chip);});
     chipWrap.appendChild(chip);
-    // Popover inline con dos inputs
-    var pop=document.createElement('div');pop.className='date-popover';pop.id=popId;
-    pop.innerHTML='<div class="dp-row">'
-      +'<div><label>Fecha Inicio</label><input type="date" id="dps_'+tid+'" value="'+esc(dispStart||'')+'" onclick="event.stopPropagation()"></div>'
-      +'<div><label>Fecha Fin</label><input type="date" id="dpe_'+tid+'" value="'+esc(dispEnd||'')+'" onclick="event.stopPropagation()"></div>'
-      +'</div>'
-      +'<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'
-      +'<button onclick="event.stopPropagation();saveDatePopover(\''+tid+'\')" style="padding:4px 12px;background:#2A2963;color:#fff;border:none;border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Guardar</button>'
-      +'<button onclick="event.stopPropagation();clearDatePopover(\''+tid+'\')" style="padding:4px 10px;background:#F7F6FC;color:#5A5880;border:1px solid rgba(42,41,99,.15);border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Limpiar</button>'
-      +'</div>';
-    pop.addEventListener('click',function(e){e.stopPropagation();});
-    chipWrap.appendChild(pop);
     hdr.appendChild(chipWrap);
     var eb=document.createElement('button');eb.className='ib';eb.innerHTML='<i class="ti ti-edit"></i>';eb.title='Editar';eb.addEventListener('click',function(e){e.stopPropagation();openMoTool(tid);});hdr.appendChild(eb);
     var db2=document.createElement('button');db2.className='ib';db2.innerHTML='<i class="ti ti-trash"></i>';db2.title='Eliminar';db2.addEventListener('click',function(e){e.stopPropagation();delTool(tid);});hdr.appendChild(db2);
