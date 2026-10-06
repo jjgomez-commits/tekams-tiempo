@@ -255,7 +255,7 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 .tb.tool-completed:hover{box-shadow:0 4px 16px rgba(16,185,129,.1),0 12px 40px rgba(16,185,129,.06)}
 .tb.tool-completed .tne{color:#475569;text-decoration:none}
 .tb.tool-completed .tn{color:#64748b}
-.th{display:grid;grid-template-columns:28px 1fr 60px 150px 120px 110px 26px 26px 44px 16px;align-items:center;gap:7px;padding:.6rem .875rem;cursor:pointer;transition:background .12s}
+.th{display:grid;grid-template-columns:28px 1fr 60px 150px 120px 170px 26px 26px 44px 16px;align-items:center;gap:7px;padding:.6rem .875rem;cursor:pointer;transition:background .12s}
 .th:hover{background:#F7F6FC}
 .isl{font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;appearance:none;-webkit-appearance:none;border-radius:20px;padding:4px 10px;transition:all .15s;height:28px;vertical-align:middle;box-sizing:border-box}
 .isl.per{background:#2A2963;color:#fff;width:150px;text-align:center;text-align-last:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -268,6 +268,28 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 .dl{font-size:10px;color:#9896B8;font-family:'DM Mono',monospace;white-space:nowrap;pointer-events:none}
 .dl.late{color:#C02020;font-weight:700}
 .dw:hover .dl{color:#2A2963}
+/* ── CHIP RANGO FECHAS HERRAMIENTA ── */
+.tool-range-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:#ECEAF8;border:1px solid var(--bl-md);cursor:pointer;font-size:10px;font-family:'DM Mono',monospace;color:#2A2963;font-weight:600;transition:all .15s;white-space:nowrap;position:relative}
+.tool-range-chip:hover{background:#dddaf5;border-color:#2A2963}
+.tool-range-chip.no-dates{background:#F7F6FC;color:#9896B8;border-color:var(--bd);font-style:italic}
+.tool-range-chip i{font-size:11px;flex-shrink:0}
+/* ── POPOVER FECHAS HERRAMIENTA ── */
+.date-popover{position:absolute;top:calc(100% + 6px);right:0;z-index:200;background:#fff;border:1px solid var(--bd-md);border-radius:12px;padding:.75rem;box-shadow:0 4px 16px rgba(42,41,99,.15),0 12px 40px rgba(42,41,99,.1);min-width:260px;display:none}
+.date-popover.open{display:block}
+.date-popover .dp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.date-popover label{display:block;font-size:9px;font-weight:700;color:#5A5880;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.date-popover input[type=date]{width:100%;font-size:11px;font-family:'DM Mono',monospace;padding:5px 8px;border-radius:8px;border:1px solid var(--bd-md);background:#F7F6FC;color:#1A1940;outline:none;cursor:pointer}
+.date-popover input[type=date]:focus{border-color:var(--bl-mid);background:#fff}
+/* ── DOS CHIPS FECHA TAREA ── */
+.task-dates-wrap{display:flex;gap:4px;align-items:center;flex-wrap:nowrap}
+.task-date-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-family:'DM Mono',monospace;font-weight:600;cursor:pointer;transition:all .15s;position:relative;white-space:nowrap;border:1px solid transparent}
+.task-date-chip.internal{background:#ECEAF8;color:#2A2963;border-color:var(--bl-md)}
+.task-date-chip.internal:hover{background:#dddaf5}
+.task-date-chip.internal.late{background:#FCEAEA;color:#C02020;border-color:#f5c6c6}
+.task-date-chip.client{background:#E6F5EE;color:#1A7A4A;border-color:#b8e0cb}
+.task-date-chip.client:hover{background:#d2edd9}
+.task-date-chip.empty{background:#F7F6FC;color:#9896B8;border-color:var(--bd);font-style:italic}
+.task-date-chip input[type=date]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;border:none;background:none;z-index:2}
 .cv{font-size:14px;color:#9896B8;transition:transform .2s;flex-shrink:0}.cv.open{transform:rotate(180deg)}
 .ta{display:flex;gap:2px;align-items:center}
 .ib{background:none;border:none;cursor:pointer;color:#9896B8;padding:3px;border-radius:5px;display:flex;align-items:center;transition:all .12s}
@@ -275,7 +297,7 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 .mp{width:44px;height:4px;background:#F2F1F8;border-radius:2px;overflow:hidden;flex-shrink:0}
 .mf{height:100%;border-radius:2px;background:#2A2963}.mf.full{background:var(--gn)}
 .stl{display:none;border-top:1px solid var(--bd)}.stl.open{display:block}
-.str{display:grid;grid-template-columns:28px 1fr 60px 150px 120px 110px 26px 26px 44px 16px;align-items:center;gap:7px;padding:.4rem .875rem .4rem 1.2rem;border-bottom:1px solid var(--bd);transition:background .12s;overflow:visible}
+.str{display:grid;grid-template-columns:28px 1fr 60px 150px 120px 200px 26px 26px;align-items:center;gap:7px;padding:.4rem .875rem .4rem 1.2rem;border-bottom:1px solid var(--bd);transition:background .12s;overflow:visible}
 .str:last-of-type{border-bottom:none}.str:hover{background:#F7F6FC}
 .ck{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--bd-md);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .ck:hover{border-color:#2A2963}.ck.on{background:#2A2963;border-color:#2A2963}.ck.on i{color:#fff;font-size:9px}
@@ -491,8 +513,8 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
     <div class="fd"><label>Nombre</label><input id="eName" type="text"></div>
     <div class="fd"><label>Responsable</label><select id="ePers"></select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <div class="fd"><label>Fecha inicio (Gantt)</label><input id="eStart" type="date"></div>
-      <div class="fd"><label>Fecha fin / objetivo</label><input id="eDate" type="date"></div>
+      <div class="fd"><label>Fecha Inicio (Marco Temporal)</label><input id="eStart" type="date"></div>
+      <div class="fd"><label>Fecha Fin (Marco Temporal)</label><input id="eDate" type="date"></div>
     </div>
     <div class="fd"><label>Estado</label><select id="eStat"><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Completada">Completada</option></select></div>
     <div class="fd"><label>Notas</label><textarea id="eNotes" style="height:60px;resize:vertical"></textarea></div>
@@ -509,9 +531,10 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
     <div class="fd"><label>Descripcion</label><input id="stDesc" type="text"></div>
     <div class="fd"><label>Responsable</label><select id="stPers"></select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <div class="fd"><label>Fecha objetivo</label><input id="stDate" type="date"></div>
-      <div class="fd"><label>Estado</label><select id="stStat"><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Completada">Completada</option></select></div>
+      <div class="fd"><label>🛠 Fecha Interna (trabajo)</label><input id="stDate" type="date"></div>
+      <div class="fd"><label>🎯 Fecha Cliente (entrega)</label><input id="stClientDate" type="date"></div>
     </div>
+    <div class="fd"><label>Estado</label><select id="stStat"><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Completada">Completada</option></select></div>
     <div class="fd"><label>Recurrencia</label><select id="stRec"><option value="">Sin recurrencia</option><option value="yearly">Anual</option><option value="weekly">Semanal</option><option value="monthly">Mensual</option><option value="quarterly">Trimestral</option></select></div>
     <div class="fd"><label>Notas</label><textarea id="stNotes" style="height:55px;resize:vertical"></textarea></div>
     <div class="fd"><label>Enlace (Google Drive, SharePoint...)</label>
@@ -973,9 +996,14 @@ function save(){
 }
 function mkPD(pid){
   return{tools:JUMP.map(function(j){return{
-    id:pid+'_'+j.n, num:j.n, name:j.name, person:'', date:'', ganttStart:'',
+    id:pid+'_'+j.n, num:j.n, name:j.name, person:'',
+    startDate:'', endDate:'',
+    date:'', ganttStart:'', // legacy aliases — kept for compatibility
     status:'Pendiente', notes:'', recurrent:'',
-    subtasks:j.sts.map(function(s,i){return{id:pid+'_'+j.n+'_'+i,text:s,person:'',date:'',status:'Pendiente',notes:'',done:false,recurrent:'',link:'',priority:''};})
+    subtasks:j.sts.map(function(s,i){return{id:pid+'_'+j.n+'_'+i,text:s,person:'',
+      internalDate:'',clientDate:'',
+      date:'', // legacy — treated as internalDate
+      status:'Pendiente',notes:'',done:false,recurrent:'',link:'',priority:''};})
   };})};
 }
 function seed(){
@@ -1012,6 +1040,67 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmt(d){return d?new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'short'}):'--';}
 function showToast(msg){var t=document.getElementById('tst');if(!t)return;t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2500);}
 
+// ─ HELPER FECHAS CORTAS ─
+function fmtShort(d){
+  if(!d)return '';
+  var dt=new Date(d+'T12:00:00');
+  var months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return String(dt.getDate()).padStart(2,'0')+' '+months[dt.getMonth()];
+}
+
+// Chip doble de fechas tarea (interna + cliente)
+function dualDateChips(tid,sid,intDate,cliDate,intLate){
+  var id1='di_'+sid.replace(/[^a-zA-Z0-9]/g,'_');
+  var id2='dc_'+sid.replace(/[^a-zA-Z0-9]/g,'_');
+  var intTxt=intDate?fmtShort(intDate):'Interna';
+  var cliTxt=cliDate?fmtShort(cliDate):'Cliente';
+  var intEmpty=!intDate; var cliEmpty=!cliDate;
+  var chip1='<div class="task-date-chip internal'+(intEmpty?' empty':'')+(intLate&&!intEmpty?' late':'')+'" title="Fecha límite interna de trabajo" onclick="event.stopPropagation();var el=document.getElementById(\''+id1+'\');if(el.showPicker)el.showPicker();else el.click();">'
+    +'<i class="ti ti-tool" style="font-size:9px"></i>'
+    +'<span>'+esc(intTxt)+'</span>'
+    +'<input id="'+id1+'" type="date" value="'+(intDate||'')+'" onchange="iSD(\''+tid+'\',\''+sid+'\',this.value)" style="position:absolute;width:1px;height:1px;opacity:0;border:none;padding:0">'
+    +'</div>';
+  var chip2='<div class="task-date-chip client'+(cliEmpty?' empty':'')+'" title="Fecha de entrega al cliente" onclick="event.stopPropagation();var el=document.getElementById(\''+id2+'\');if(el.showPicker)el.showPicker();else el.click();">'
+    +'<i class="ti ti-flag" style="font-size:9px"></i>'
+    +'<span>'+esc(cliTxt)+'</span>'
+    +'<input id="'+id2+'" type="date" value="'+(cliDate||'')+'" onchange="iSCD(\''+tid+'\',\''+sid+'\',this.value)" style="position:absolute;width:1px;height:1px;opacity:0;border:none;padding:0">'
+    +'</div>';
+  return chip1+chip2;
+}
+
+// Popover de fechas de herramienta
+function toggleDatePopover(popId){
+  // Cerrar cualquier otro popover abierto
+  document.querySelectorAll('.date-popover.open').forEach(function(p){
+    if(p.id!==popId)p.classList.remove('open');
+  });
+  var pop=document.getElementById(popId);
+  if(pop)pop.classList.toggle('open');
+}
+function saveDatePopover(tid){
+  var t=findTool(tid);if(!t)return;
+  var sv=document.getElementById('dps_'+tid);
+  var ev=document.getElementById('dpe_'+tid);
+  if(sv){t.startDate=sv.value;t.ganttStart=sv.value;}
+  if(ev){t.endDate=ev.value;t.date=ev.value;}
+  save();
+  var pop=document.getElementById('dpop_'+tid);
+  if(pop)pop.classList.remove('open');
+  renderToolsKeepOpen();
+}
+function clearDatePopover(tid){
+  var t=findTool(tid);if(!t)return;
+  t.startDate='';t.ganttStart='';t.endDate='';t.date='';
+  save();
+  var pop=document.getElementById('dpop_'+tid);
+  if(pop)pop.classList.remove('open');
+  renderToolsKeepOpen();
+}
+// Cerrar popovers al clicar fuera
+document.addEventListener('click',function(){
+  document.querySelectorAll('.date-popover.open').forEach(function(p){p.classList.remove('open');});
+});
+
 // ─ INLINE SELECTS ─
 function pSel(cur,fn){
   var p=proj();
@@ -1038,14 +1127,15 @@ function dInp(cur,late,fn){
 // ─ INLINE SETTERS ─
 function iGS(tid,val){
   var t=findTool(tid);if(!t)return;
-  t.ganttStart=val;
+  t.ganttStart=val; t.startDate=val;
   save();
   renderToolsKeepOpen();
 }
 
 function iTP(tid,val){var t=findTool(tid);if(!t)return;var pv=t.person;t.person=val;if(val&&val!==pv&&val!==ME)addN(val,'herramienta',t.num+'. '+t.name);save();renderTools();renderPH();renderDash();}
 function iTS(tid,val){var t=findTool(tid);if(!t)return;t.status=val;if(val==='Completada'){var _ss=t.subtasks||[];if(!Array.isArray(_ss))_ss=Object.values(_ss);_ss.forEach(function(s){s.done=true;s.status='Completada';});}save();renderTools();renderPH();renderDash();}
-function iTD(tid,val){var t=findTool(tid);if(!t)return;t.date=val;save();renderToolsKeepOpen();}
+function iTD(tid,val){var t=findTool(tid);if(!t)return;t.date=val;t.endDate=val;save();renderToolsKeepOpen();}
+function iTSD(tid,val){var t=findTool(tid);if(!t)return;t.ganttStart=val;t.startDate=val;save();renderToolsKeepOpen();}
 function iSP(tid,sid,val){var t=findTool(tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;var pv=s.person;s.person=val;if(val&&val!==pv&&val!==ME)addN(val,'tarea',s.text);save();renderToolsKeepOpen();}
 function iSS(tid,sid,val){var t=findTool(tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;s.status=val;s.done=val==='Completada';save();renderToolsKeepOpen();renderPH();renderDash();}
 function iSPrioD(projId,toolNum,sid,val){
@@ -1059,7 +1149,10 @@ function iSPrio(tid,sid,val){
   var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;
   s.priority=val;save();
 }
-function iSD(tid,sid,val){var t=findTool(tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;s.due_date=val;s.date=val;save();renderToolsKeepOpen();}
+// Fecha interna de tarea (trabajo)
+function iSD(tid,sid,val){var t=findTool(tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;s.internalDate=val;s.due_date=val;s.date=val;save();renderToolsKeepOpen();}
+// Fecha cliente de tarea (entrega)
+function iSCD(tid,sid,val){var t=findTool(tid);if(!t)return;var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;s.clientDate=val;save();renderToolsKeepOpen();}
 
 function findTool(tid){var dd=pdata();if(!dd)return null;return dd.tools.find(function(t){return t.id===tid;})||null;}
 
@@ -1251,21 +1344,22 @@ function renderDashProjs(){
     var done=tools.filter(function(t){return tStat(t)==='Completada';}).length;
     var curso=tools.filter(function(t){return tStat(t)==='En curso';}).length;
     var pct=tools.length?Math.round(done/tools.length*100):0;
-    var late=tools.filter(function(t){return t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today;}).length
-            +allS.filter(function(s){return !s.done&&s.date&&new Date(s.date+'T23:59:59')<today;}).length;
+    var late=tools.filter(function(t){var ed=t.endDate||t.date||'';return ed&&tStat(t)!=='Completada'&&new Date(ed+'T23:59:59')<today;}).length
+            +allS.filter(function(s){var id=s.internalDate||s.date||'';return !s.done&&id&&new Date(id+'T23:59:59')<today;}).length;
     var team=TEAM.filter(function(n){return(p.team||[]).indexOf(n)>=0;});
     var avH=team.map(function(name){
       var mt=tools.filter(function(t){return t.person===name;});
       var ms=allS.filter(function(s){return s.person===name&&!s.done;});
       var cnt=mt.length+ms.length;
-      var mL=ms.filter(function(s){return s.date&&new Date(s.date+'T23:59:59')<today;}).length;
+      var mL=ms.filter(function(s){var id=s.internalDate||s.date||'';return id&&new Date(id+'T23:59:59')<today;}).length;
       return'<div class="av'+(cnt>0?' has':' emp')+'" title="'+esc(name)+': '+cnt+' tareas">'+ini(name)+(cnt>0?'<span class="avc'+(mL>0?' red':'')+'">'+cnt+'</span>':'')+'</div>';
     }).join('');
     var urg=[];
     tools.forEach(function(t){
-      if(t.date&&tStat(t)!=='Completada'&&new Date(t.date+'T23:59:59')<today)urg.push({n:t.num+'. '+t.name,w:t.person,d:t.date});
+      var ed=t.endDate||t.date||'';
+      if(ed&&tStat(t)!=='Completada'&&new Date(ed+'T23:59:59')<today)urg.push({n:t.num+'. '+t.name,w:t.person,d:ed});
       var urgSubs=t.subtasks||[];if(!Array.isArray(urgSubs))urgSubs=Object.values(urgSubs);
-      urgSubs.forEach(function(s){if(!s.done&&s.date&&new Date(s.date+'T23:59:59')<today)urg.push({n:s.text,w:s.person,d:s.date});});
+      urgSubs.forEach(function(s){var id=s.internalDate||s.date||'';if(!s.done&&id&&new Date(id+'T23:59:59')<today)urg.push({n:s.text,w:s.person,d:id});});
     });
     var lH=urg.length
       ?'<div class="ls2"><div class="lt3"><i class="ti ti-alert-triangle" style="font-size:10px;vertical-align:-1px;color:var(--rd);margin-right:2px"></i>Vencidas ('+urg.length+')</div>'
@@ -1330,7 +1424,7 @@ function renderDashTasks(){
     if(!mySubs.length)return;
 
     var pend=mySubs.length;
-    var late=mySubs.filter(function(x){return x.sub.date&&new Date(x.sub.date+'T23:59:59')<today;}).length;
+    var late=mySubs.filter(function(x){var id=x.sub.internalDate||x.sub.date||'';return id&&new Date(id+'T23:59:59')<today;}).length;
 
     h+='<div style="background:#fff;border:1px solid rgba(42,41,99,.08);border-radius:14px;margin-bottom:1rem;overflow:hidden">';
     h+='<div style="background:#1E1D4A;padding:.875rem 1rem;display:flex;align-items:center;gap:10px">'
@@ -1369,10 +1463,24 @@ function renderDashTasks(){
 
       g.items.forEach(function(x){
         var s=x.sub;
-        var late2=!!(s.date&&new Date(s.date+'T23:59:59')<today);
+        var intDate=s.internalDate||s.date||s.due_date||'';
+        var cliDate=s.clientDate||'';
+        var late2=!!(intDate&&new Date(intDate+'T23:59:59')<today);
         var stCl=s.status==='Completada'?'s-do':s.status==='En curso'?'s-cu':'s-pe';
         var prioVal=s.priority||'';var prioTxt=prioVal?('<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;'+(PRIO_STYLE[prioVal]||'background:#eee;color:#333')+'">'+(PRIO[prioVal]||prioVal)+'</span>'):'';
         var rec=s.recurrent?('<span style="font-size:8px;font-weight:700;padding:1px 5px;border-radius:20px;background:#8B3FA8;color:#fff;margin-left:4px">'+(recLabels[s.recurrent]||s.recurrent)+'</span>'):'';
+        // chips de fechas en Resumen Global
+        var _id1='dwdi_'+s.id; var _id2='dwdc_'+s.id;
+        var intChip='<div style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-family:DM Mono,monospace;font-weight:600;cursor:pointer;position:relative;white-space:nowrap;background:'+(intDate?(late2?'#FCEAEA':'#ECEAF8'):'#F7F6FC')+';color:'+(intDate?(late2?'#C02020':'#2A2963'):'#9896B8')+';border:1px solid '+(intDate?(late2?'#f5c6c6':'#B8B5E8'):'rgba(42,41,99,.08)')+'" onclick="event.stopPropagation();var el=document.getElementById(\''+_id1+'\');if(el.showPicker)el.showPicker();else el.click();" title="Fecha interna de trabajo">'
+          +'<i class="ti ti-tool" style="font-size:9px"></i>'
+          +'<span>'+(intDate?fmtShort(intDate):'Interna')+'</span>'
+          +'<input id="'+_id1+'" type="date" value="'+(intDate||'')+"\" onchange=\"iSDDash('"+x.projId+"','"+x.toolNum+"','"+s.id+"',this.value)\" style=\"position:absolute;width:1px;height:1px;opacity:0\">"
+          +'</div>';
+        var cliChip='<div style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-family:DM Mono,monospace;font-weight:600;cursor:pointer;position:relative;white-space:nowrap;background:'+(cliDate?'#E6F5EE':'#F7F6FC')+';color:'+(cliDate?'#1A7A4A':'#9896B8')+';border:1px solid '+(cliDate?'#b8e0cb':'rgba(42,41,99,.08)')+'" onclick="event.stopPropagation();var el=document.getElementById(\''+_id2+'\');if(el.showPicker)el.showPicker();else el.click();" title="Fecha de entrega al cliente">'
+          +'<i class="ti ti-flag" style="font-size:9px"></i>'
+          +'<span>'+(cliDate?fmtShort(cliDate):'Cliente')+'</span>'
+          +'<input id="'+_id2+'" type="date" value="'+(cliDate||'')+"\" onchange=\"iSCDDash('"+x.projId+"','"+x.toolNum+"','"+s.id+"',this.value)\" style=\"position:absolute;width:1px;height:1px;opacity:0\">"
+          +'</div>';
 
         h+='<div style="display:flex;align-items:center;gap:8px;padding:.35rem 1rem .35rem 2rem;border-bottom:1px solid rgba(42,41,99,.04)">'
           +'<div style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(42,41,99,.25);flex-shrink:0;cursor:pointer" onclick="togStDash(\''+x.projId+'\',\''+x.toolNum+'\',\''+s.id+'\')"></div>'
@@ -1383,7 +1491,8 @@ function renderDashTasks(){
           +'<option value="media"'+(prioVal==='media'?' selected':'')+'>🟡</option>'
           +'<option value="baja"'+(prioVal==='baja'?' selected':'')+'>🟢</option>'
           +'</select>'
-          +(function(){var _id='dwd_'+s.id;return '<div class="dw" style="cursor:pointer;padding:4px 8px;min-width:80px" onclick="event.stopPropagation();var el=document.getElementById(\''+_id+'\');if(el.showPicker)el.showPicker();else el.click();">'+'<i class="ti ti-calendar" style="font-size:10px;color:'+(late2?'#C02020':'#9896B8')+'" ></i>'+'<span class="dl'+(late2?' late':'')+'" style="pointer-events:none">'+(s.date?fmt(s.date):'Sin fecha')+(late2?' !':'')+'</span>'+'<input id="'+_id+'" type="date" value="'+(s.date||'')+"\" onchange=\"iSDDash('"+x.projId+"','"+x.toolNum+"','"+s.id+"',this.value)\" style=\"position:absolute;width:1px;height:1px;opacity:0\">"+'</div>';})()          +'<select class="isl sta '+stCl+'" onchange="iSSDash(\''+x.projId+'\',\''+x.toolNum+'\',\''+s.id+'\',this.value)" onclick="event.stopPropagation()" style="font-size:9px">'
+          +'<div style="display:flex;gap:3px;align-items:center">'+intChip+cliChip+'</div>'
+          +'<select class="isl sta '+stCl+'" onchange="iSSDash(\''+x.projId+'\',\''+x.toolNum+'\',\''+s.id+'\',this.value)" onclick="event.stopPropagation()" style="font-size:9px">'
             +'<option value="Pendiente"'+(s.status==='Pendiente'?' selected':'')+'>Pendiente</option>'
             +'<option value="En curso"'+(s.status==='En curso'?' selected':'')+'>En curso</option>'
             +'<option value="Completada"'+(s.status==='Completada'?' selected':'')+'>Completada</option>'
@@ -1398,12 +1507,19 @@ function renderDashTasks(){
   el.innerHTML=filterHtml+h;
 }
 
-// Cambiar fecha de subtarea desde vista de tareas
+// Cambiar fecha interna de subtarea desde vista de tareas
 function iSDDash(projId,toolNum,sid,val){
   var pda=pd[projId];if(!pda)return;
   var t=pda.tools.find(function(t){return t.num===toolNum;});if(!t)return;
   var s=t.subtasks.find(function(s){return s.id===sid;});if(!s)return;
-  s.date=val;save();renderDashTasks();
+  s.internalDate=val;s.date=val;s.due_date=val;save();renderDashTasks();
+}
+// Cambiar fecha cliente de subtarea desde vista de tareas
+function iSCDDash(projId,toolNum,sid,val){
+  var pda=pd[projId];if(!pda)return;
+  var t=pda.tools.find(function(t){return t.num===toolNum;});if(!t)return;
+  var s=t.subtasks.find(function(s){return s.id===sid;});if(!s)return;
+  s.clientDate=val;save();renderDashTasks();
 }
 
 // Cambiar estado de subtarea desde vista de tareas
@@ -1429,11 +1545,14 @@ function togStDash(projId,toolNum,sid){
   var wasDone=s.done;
   s.done=!s.done;s.status=s.done?'Completada':'Pendiente';
   if(s.done&&!wasDone&&s.recurrent){
-    var nextDate=nextRecDate(s.date,s.recurrent);
+    var baseDate2=s.internalDate||s.date||'';
+    var nextDate=nextRecDate(baseDate2,s.recurrent);
     var newSub={
       id:projId+'_rec_'+Date.now(),
       text:s.text,person:s.person||'',
-      date:nextDate,status:'Pendiente',
+      internalDate:nextDate,clientDate:s.clientDate||'',
+      date:nextDate,due_date:nextDate,
+      status:'Pendiente',
       notes:s.notes||'',done:false,
       recurrent:s.recurrent,link:s.link||'',priority:s.priority||''
     };
@@ -1452,7 +1571,7 @@ function renderTeam(){
     var mt=allT.filter(function(t){return t.person===name;});
     var ms=allS.filter(function(s){return s.person===name;});
     var sp=ms.filter(function(s){return !s.done;}).length;var sd=ms.filter(function(s){return s.done;}).length;
-    var lt=ms.filter(function(s){return !s.done&&s.date&&new Date(s.date+'T23:59:59')<today;}).length;
+    var lt=ms.filter(function(s){var id=s.internalDate||s.date||'';return !s.done&&id&&new Date(id+'T23:59:59')<today;}).length;
     return'<div class="mc"><div class="mch"><div class="mca">'+ini(name)+'</div><div><div class="mcn">'+esc(name)+'</div><div class="mcs2">'+mt.length+' herramienta'+(mt.length!==1?'s':'')+'</div></div></div>'
       +'<div class="mcs"><div class="mst"><b>'+sp+'</b> pendientes</div><div class="mst"><b>'+sd+'</b> completadas</div>'+(lt>0?'<div class="mst red"><b>'+lt+'</b> vencidas</div>':'')+'</div></div>';
   }).join('');
@@ -1487,10 +1606,13 @@ function buildExportRows(){
   var rows=[];
   tools.forEach(function(t){
     var st=tStat(t),pct=tPct(t);
-    rows.push({tipo:'herramienta',num:t.num,nombre:t.name,responsable:t.person||'',fecha:t.date?fmt(t.date):'',estado:st,prioridad:'',avance:pct+'%'});
+    var toolEnd=t.endDate||t.date||'';
+    rows.push({tipo:'herramienta',num:t.num,nombre:t.name,responsable:t.person||'',fecha:toolEnd?fmt(toolEnd):'',estado:st,prioridad:'',avance:pct+'%'});
     t.subtasks.forEach(function(s){
       var rec=s.recurrent?' ['+(recMap[s.recurrent]||s.recurrent)+']':'';
-      rows.push({tipo:'subtarea',num:'',nombre:(s.done?'\u2611':'\u2610')+' '+s.text+rec,responsable:s.person||'',fecha:s.date?fmt(s.date):'',estado:s.status,prioridad:prioMap[s.priority||'']||'',avance:s.done?'100%':''});
+      var intD=s.internalDate||s.date||''; var cliD=s.clientDate||'';
+      var fechaStr=(intD?('🛠'+fmt(intD)):'')+(cliD?(' 🎯'+fmt(cliD)):'');
+      rows.push({tipo:'subtarea',num:'',nombre:(s.done?'\u2611':'\u2610')+' '+s.text+rec,responsable:s.person||'',fecha:fechaStr||'',estado:s.status,prioridad:prioMap[s.priority||'']||'',avance:s.done?'100%':''});
     });
   });
   return {p:p,tools:tools,rows:rows};
@@ -1574,7 +1696,7 @@ function addSt(tid){
   var t=findTool(tid);if(!t)return;
   if(!t.subtasks)t.subtasks=[];
   else if(!Array.isArray(t.subtasks))t.subtasks=Object.values(t.subtasks);
-  t.subtasks.push({id:tid+'_st_'+Date.now(),text:text,person:'',date:'',due_date:'',status:'Pendiente',notes:'',done:false,recurrent:'',link:'',priority:''});
+  t.subtasks.push({id:tid+'_st_'+Date.now(),text:text,person:'',internalDate:'',clientDate:'',date:'',due_date:'',status:'Pendiente',notes:'',done:false,recurrent:'',link:'',priority:''});
   inp.value='';
   save();renderToolsKeepOpen(tid);
 }
@@ -1585,7 +1707,7 @@ function addTool(){
   else if(!Array.isArray(pda.tools))pda.tools=Object.values(pda.tools);
   var nxt=String(pda.tools.length).padStart(2,'0');
   pda.tools.push({id:curP+'_'+nxt+'_'+Date.now(),num:nxt,name:'Nueva herramienta',
-    person:'',date:'',ganttStart:'',status:'Pendiente',notes:'',recurrent:'',subtasks:[]});
+    person:'',startDate:'',endDate:'',date:'',ganttStart:'',status:'Pendiente',notes:'',recurrent:'',subtasks:[]});
   save();renderTools();renderPH();
 }
 
@@ -1624,7 +1746,13 @@ function editProj(pid){
 
 function expandAll(){document.querySelectorAll('.stl').forEach(function(e){e.classList.add('open');});document.querySelectorAll('.cv').forEach(function(e){e.classList.add('open');});}
 
-function openMoSt(tid,sid){var t=findTool(tid);if(!t)return;if(!t.subtasks)t.subtasks=[];else if(!Array.isArray(t.subtasks))t.subtasks=Object.values(t.subtasks);var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;eStids={tid:tid,sid:sid};document.getElementById('moST').textContent=t.num+'. '+t.name;document.getElementById('stDesc').value=s.text;document.getElementById('stPers').innerHTML=teamOptsM(s.person);document.getElementById('stDate').value=s.date||s.due_date||'';document.getElementById('stStat').value=s.status||'Pendiente';if(document.getElementById('stRec'))document.getElementById('stRec').value=s.recurrent||'';document.getElementById('stNotes').value=s.notes||'';
+function openMoSt(tid,sid){var t=findTool(tid);if(!t)return;if(!t.subtasks)t.subtasks=[];else if(!Array.isArray(t.subtasks))t.subtasks=Object.values(t.subtasks);var s=t.subtasks.find(function(x){return x.id===sid;});if(!s)return;eStids={tid:tid,sid:sid};document.getElementById('moST').textContent=t.num+'. '+t.name;document.getElementById('stDesc').value=s.text;document.getElementById('stPers').innerHTML=teamOptsM(s.person);
+  // internalDate (nuevo) o date/due_date (legacy)
+  document.getElementById('stDate').value=s.internalDate||s.date||s.due_date||'';
+  // clientDate (nuevo)
+  var stClientEl=document.getElementById('stClientDate');
+  if(stClientEl) stClientEl.value=s.clientDate||'';
+  document.getElementById('stStat').value=s.status||'Pendiente';if(document.getElementById('stRec'))document.getElementById('stRec').value=s.recurrent||'';document.getElementById('stNotes').value=s.notes||'';
   var stPrioEl=document.getElementById('stPrio');
   if(stPrioEl) stPrioEl.value=s.priority||s.prio||'';
   var stLinkEl=document.getElementById('stLink');
@@ -1646,9 +1774,12 @@ function openMoTool(tid){
   document.getElementById('moTT').textContent=t.num+'. '+t.name;
   document.getElementById('eName').value=t.name;
   document.getElementById('ePers').innerHTML=teamOptsM(t.person);
-  // Mostrar fecha calculada si no hay manual
-  document.getElementById('eStart').value=t.ganttStart||calcd.start||'';
-  document.getElementById('eDate').value=t.date||calcd.end||'';
+  // startDate (nuevo) o ganttStart (legacy) para inicio
+  var sd=t.startDate||t.ganttStart||calcd.start||'';
+  // endDate (nuevo) o date (legacy) para fin
+  var ed=t.endDate||t.date||calcd.end||'';
+  document.getElementById('eStart').value=sd;
+  document.getElementById('eDate').value=ed;
   document.getElementById('eStat').value=t.status||'Pendiente';
   document.getElementById('eNotes').value=t.notes||'';
   document.getElementById('moTool').classList.add('on');
@@ -1884,19 +2015,40 @@ function renderTools(){
     var nameEl=document.createElement('input');nameEl.className='tne';nameEl.value=tool.name;
     nameEl.addEventListener('click',function(e){e.stopPropagation();});
     nameEl.addEventListener('change',function(){updTN(tid,this.value);});hdr.appendChild(nameEl);
-    // Columnas 3-5 (prioridad/recurrencia/enlace) no aplican a nivel herramienta: se reservan vacias
-    // para que persona/estado/fecha caigan en la misma columna que en las subtareas.
+    // Columna 3: placeholder vacío para alinear con subtareas
     var metaPh=document.createElement('span');metaPh.style.cssText='visibility:hidden';hdr.appendChild(metaPh);
     hdr.insertAdjacentHTML('beforeend',pSel(tool.person,'iTP(\''+tid+'\',this.value)'));
     hdr.insertAdjacentHTML('beforeend',sSel(st,'iTS(\''+tid+'\',this.value)'));
-    // Calcular fecha fin desde schedule (la fecha de inicio sigue editable desde "Editar")
+    // Chip de rango fechas herramienta (startDate — endDate)
     var p2=proj();
     var allToolsList=pdata().tools;
     var tIdx=allToolsList.findIndex(function(x){return x.id===tool.id;});
     var calcd=calcToolDates(tool, p2?p2.start:'', tIdx>=0?tIdx:0);
-    var displayEnd=tool.date||calcd.end;
-    var endLate=!!(displayEnd&&st!=='Completada'&&new Date(displayEnd+'T23:59:59')<today);
-    hdr.insertAdjacentHTML('beforeend', dInp(displayEnd, endLate, 'iTD(\''+tid+'\',this.value)'));
+    var dispStart=tool.startDate||tool.ganttStart||calcd.start||'';
+    var dispEnd=tool.endDate||tool.date||calcd.end||'';
+    var popId='dpop_'+tid;
+    var chipWrap=document.createElement('div');chipWrap.style.cssText='position:relative;display:inline-flex;align-items:center';
+    var chipHasDate=!!(dispStart||dispEnd);
+    var chipTxt=chipHasDate?(dispStart&&dispEnd?fmtShort(dispStart)+' — '+fmtShort(dispEnd):(dispStart?fmtShort(dispStart):(dispEnd?fmtShort(dispEnd):'Sin fechas'))):'Sin fechas';
+    var chip=document.createElement('div');
+    chip.className='tool-range-chip'+(chipHasDate?'':' no-dates');
+    chip.innerHTML='<i class="ti ti-calendar-range"></i><span>'+esc(chipTxt)+'</span>';
+    chip.title='Clic para editar fechas de la herramienta';
+    chip.addEventListener('click',function(e){e.stopPropagation();toggleDatePopover(popId);});
+    chipWrap.appendChild(chip);
+    // Popover inline con dos inputs
+    var pop=document.createElement('div');pop.className='date-popover';pop.id=popId;
+    pop.innerHTML='<div class="dp-row">'
+      +'<div><label>Fecha Inicio</label><input type="date" id="dps_'+tid+'" value="'+esc(dispStart||'')+'" onclick="event.stopPropagation()"></div>'
+      +'<div><label>Fecha Fin</label><input type="date" id="dpe_'+tid+'" value="'+esc(dispEnd||'')+'" onclick="event.stopPropagation()"></div>'
+      +'</div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'
+      +'<button onclick="event.stopPropagation();saveDatePopover(\''+tid+'\')" style="padding:4px 12px;background:#2A2963;color:#fff;border:none;border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Guardar</button>'
+      +'<button onclick="event.stopPropagation();clearDatePopover(\''+tid+'\')" style="padding:4px 10px;background:#F7F6FC;color:#5A5880;border:1px solid rgba(42,41,99,.15);border-radius:8px;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">Limpiar</button>'
+      +'</div>';
+    pop.addEventListener('click',function(e){e.stopPropagation();});
+    chipWrap.appendChild(pop);
+    hdr.appendChild(chipWrap);
     var eb=document.createElement('button');eb.className='ib';eb.innerHTML='<i class="ti ti-edit"></i>';eb.title='Editar';eb.addEventListener('click',function(e){e.stopPropagation();openMoTool(tid);});hdr.appendChild(eb);
     var db2=document.createElement('button');db2.className='ib';db2.innerHTML='<i class="ti ti-trash"></i>';db2.title='Eliminar';db2.addEventListener('click',function(e){e.stopPropagation();delTool(tid);});hdr.appendChild(db2);
     hdr.insertAdjacentHTML('beforeend','<div class="mp" title="Avance: '+pct+'%"><div class="mf'+(pct===100?' full':'')+'" style="width:'+pct+'%"></div></div>');
@@ -1981,7 +2133,12 @@ function renderTools(){
       row.appendChild(metaCell);
       row.insertAdjacentHTML('beforeend',pSel(s.person,'iSP(\''+tid+'\',\''+sid+'\',this.value)'));
       row.insertAdjacentHTML('beforeend',sSel(s.status,'iSS(\''+tid+'\',\''+sid+'\',this.value)'));
-      row.insertAdjacentHTML('beforeend',dInp(s.date||s.due_date,stLate,'iSD(\''+tid+'\',\''+sid+'\',this.value)'));
+      // Dos chips de fecha: interna + cliente
+      var intDate=s.internalDate||s.date||s.due_date||'';
+      var cliDate=s.clientDate||'';
+      var datesWrap=document.createElement('div');datesWrap.className='task-dates-wrap';
+      datesWrap.innerHTML=dualDateChips(tid,sid,intDate,cliDate,stLate);
+      row.appendChild(datesWrap);
       var sedit=document.createElement('button');sedit.className='ib';sedit.innerHTML='<i class="ti ti-edit"></i>';sedit.addEventListener('click',function(e){e.stopPropagation();openMoSt(tid,sid);});row.appendChild(sedit);
       var sdel=document.createElement('button');sdel.className='ib';sdel.innerHTML='<i class="ti ti-trash"></i>';sdel.addEventListener('click',function(e){e.stopPropagation();delSt(tid,sid);});row.appendChild(sdel);
       stList.appendChild(row);
@@ -2002,13 +2159,20 @@ function saveNewP(){
   projs.push(p);pd[p.id]=mkPD(p.id);save();buildSB();closePM();openProj(p.id);
 }
 
-function saveSt(){var t=findTool(eStids.tid);if(!t)return;if(!t.subtasks)t.subtasks=[];else if(!Array.isArray(t.subtasks))t.subtasks=Object.values(t.subtasks);var s=t.subtasks.find(function(x){return x.id===eStids.sid;});if(!s)return;var pv=s.person;s.text=document.getElementById('stDesc').value.trim()||s.text;s.person=document.getElementById('stPers').value;s.date=document.getElementById('stDate').value;s.due_date=document.getElementById('stDate').value;s.status=document.getElementById('stStat').value;s.done=s.status==='Completada';s.recurrent=document.getElementById('stRec')?document.getElementById('stRec').value:'';s.notes=document.getElementById('stNotes').value.trim();
+function saveSt(){var t=findTool(eStids.tid);if(!t)return;if(!t.subtasks)t.subtasks=[];else if(!Array.isArray(t.subtasks))t.subtasks=Object.values(t.subtasks);var s=t.subtasks.find(function(x){return x.id===eStids.sid;});if(!s)return;var pv=s.person;s.text=document.getElementById('stDesc').value.trim()||s.text;s.person=document.getElementById('stPers').value;
+  // internalDate (nuevo campo) + legacy
+  var idv=document.getElementById('stDate').value;
+  s.internalDate=idv; s.date=idv; s.due_date=idv;
+  // clientDate
+  var stClientEl3=document.getElementById('stClientDate');
+  s.clientDate=stClientEl3?stClientEl3.value:'';
+  s.status=document.getElementById('stStat').value;s.done=s.status==='Completada';s.recurrent=document.getElementById('stRec')?document.getElementById('stRec').value:'';s.notes=document.getElementById('stNotes').value.trim();
   var stPrioEl2=document.getElementById('stPrio');
   if(stPrioEl2) s.priority=stPrioEl2.value;
   var stLinkEl2=document.getElementById('stLink');
   s.link=stLinkEl2?stLinkEl2.value.trim():'';if(s.person&&s.person!==pv&&s.person!==ME)addN(s.person,'tarea',s.text);save();closeMoSt();renderToolsKeepOpen();renderPH();}
 
-function saveTool(){var t=findTool(eTid);if(!t)return;var pv=t.person;t.name=document.getElementById('eName').value.trim()||t.name;t.person=document.getElementById('ePers').value;t.ganttStart=document.getElementById('eStart').value;t.date=document.getElementById('eDate').value;t.status=document.getElementById('eStat').value;t.notes=document.getElementById('eNotes').value.trim();if(t.person&&t.person!==pv&&t.person!==ME)addN(t.person,'herramienta',t.num+'. '+t.name);save();closeMoTool();renderToolsKeepOpen();renderPH();renderDash();}
+function saveTool(){var t=findTool(eTid);if(!t)return;var pv=t.person;t.name=document.getElementById('eName').value.trim()||t.name;t.person=document.getElementById('ePers').value;var sv=document.getElementById('eStart').value;var ev=document.getElementById('eDate').value;t.startDate=sv;t.ganttStart=sv;t.endDate=ev;t.date=ev;t.status=document.getElementById('eStat').value;t.notes=document.getElementById('eNotes').value.trim();if(t.person&&t.person!==pv&&t.person!==ME)addN(t.person,'herramienta',t.num+'. '+t.name);save();closeMoTool();renderToolsKeepOpen();renderPH();renderDash();}
 
 function teamOptsM(cur){return'<option value="">Sin asignar</option>'+((proj()&&proj().team)||[]).map(function(n){return'<option value="'+esc(n)+'"'+(cur===n?' selected':'')+'>'+esc(n)+'</option>';}).join('');}
 
@@ -2021,11 +2185,14 @@ function togSt(tid,sid){
 
   // Si se completa una tarea recurrente, crear la siguiente
   if(s.done&&!wasDone&&s.recurrent){
-    var nextDate=nextRecDate(s.date,s.recurrent);
+    var baseDate=s.internalDate||s.date||'';
+    var nextDate=nextRecDate(baseDate,s.recurrent);
     var newSub={
       id:tid+'_rec_'+Date.now(),
       text:s.text,person:s.person||'',
-      date:nextDate,status:'Pendiente',
+      internalDate:nextDate,clientDate:s.clientDate||'',
+      date:nextDate,due_date:nextDate,
+      status:'Pendiente',
       notes:s.notes||'',done:false,
       recurrent:s.recurrent,link:s.link||'',priority:s.priority||''
     };
@@ -2073,13 +2240,14 @@ function calcToolDates(tool, projStart, toolIndex){
   function parseD(str){var p=str.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
   function toISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   var ps=parseD(projStart);
-  // sw ya es el offset directo desde projStart (positivo o negativo)
-  var calcStart=(tool.ganttStart&&tool.ganttStart.length===10)
-    ?parseD(tool.ganttStart)
-    :new Date(ps.getTime()+sched.sw*W);
-  var calcEnd=(tool.date&&tool.date.length===10)
-    ?parseD(tool.date)
-    :new Date(calcStart.getTime()+sched.dw*W);
+  // Usar startDate (nuevo) o ganttStart (legacy) para inicio
+  var manualStart=tool.startDate&&tool.startDate.length===10 ? tool.startDate :
+                  (tool.ganttStart&&tool.ganttStart.length===10 ? tool.ganttStart : null);
+  // Usar endDate (nuevo) o date (legacy) para fin
+  var manualEnd=tool.endDate&&tool.endDate.length===10 ? tool.endDate :
+                (tool.date&&tool.date.length===10 ? tool.date : null);
+  var calcStart=manualStart?parseD(manualStart):new Date(ps.getTime()+sched.sw*W);
+  var calcEnd=manualEnd?parseD(manualEnd):new Date(calcStart.getTime()+sched.dw*W);
   return{start:toISO(calcStart),end:toISO(calcEnd),dw:sched.dw};
 }
 
@@ -2126,7 +2294,7 @@ function resetAllDates(){
     // Renumerar: 00, 01, 02...
     tools.forEach(function(t,i){t.num=String(i).padStart(2,'0');});
     // Limpiar fechas manuales
-    tools.forEach(function(t){t.ganttStart='';t.date='';});
+    tools.forEach(function(t){t.startDate='';t.ganttStart='';t.endDate='';t.date='';});
   });
   save();
   if(curP){renderPH();renderTools();}
@@ -2267,12 +2435,14 @@ function printTasks(){
       if(toolKey!==lastTool){lastTool=toolKey;h+='<div class="tool-row">'+x.toolNum+' '+x.toolName+'</div>';}
       if(x.isToolOnly){h+='<div class="sub-row"><span class="cb"></span><span>'+x.toolName+'</span></div>';return;}
       var s=x.sub;
-      var late2=!!(s.date&&!s.done&&new Date(s.date+'T23:59:59')<today);
+      var intDateP=s.internalDate||s.date||''; var cliDateP=s.clientDate||'';
+      var late2=!!(intDateP&&!s.done&&new Date(intDateP+'T23:59:59')<today);
       var rec=s.recurrent?(' <span style="font-size:9px;background:#8B3FA8;color:#fff;padding:1px 5px;border-radius:10px">'+(recLabels[s.recurrent]||s.recurrent)+'</span>'):'';
       h+='<div class="sub-row">'
         +'<span class="cb'+(s.done?' done':'')+'"></span>'
         +'<span style="flex:1;'+(s.done?'text-decoration:line-through;color:#9896B8':'')+'">'+s.text+rec+'</span>'
-        +(s.date?'<span class="date'+(late2?' late':'')+'">'+( late2?'⚠ ':'')+new Date(s.date).toLocaleDateString('es-ES')+'</span>':'')
+        +(intDateP?'<span class="date'+(late2?' late':'')+'" title="Fecha interna">🛠'+(late2?'⚠ ':'')+new Date(intDateP).toLocaleDateString('es-ES')+'</span>':'')
+        +(cliDateP?'<span class="date" style="color:#1A7A4A" title="Fecha cliente">🎯'+new Date(cliDateP).toLocaleDateString('es-ES')+'</span>':'')
         +'</div>';
     });
   });
@@ -2289,12 +2459,13 @@ function duplicateProj(pid){
   var srcData=pdata(pid);
   pd[newId]={tools:srcData.tools.map(function(t){
     return{id:newId+'_'+t.num+'_'+Date.now(),num:t.num,name:t.name,person:t.person,
-      date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
+      startDate:'',endDate:'',date:'',ganttStart:'',status:'Pendiente',notes:t.notes||'',
       recurrent:t.recurrent||'',link:t.link||'',
       subtasks:t.subtasks.map(function(s){
         return{id:newId+'_st_'+Math.random().toString(36).slice(2),
-          text:s.text,person:s.person||'',date:'',status:'Pendiente',
-          notes:s.notes||'',done:false,recurrent:s.recurrent||'',
+          text:s.text,person:s.person||'',
+          internalDate:'',clientDate:'',date:'',due_date:'',
+          status:'Pendiente',notes:s.notes||'',done:false,recurrent:s.recurrent||'',
           link:s.link||'',priority:s.priority||''};
       })};
   })};
