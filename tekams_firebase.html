@@ -251,6 +251,10 @@ body{font-family:'DM Sans',sans-serif;background:#F2F1F8;color:#1A1940;min-heigh
 .tne:focus{border-bottom:1.5px solid var(--bl-md)}
 .tb{background:#FFFFFF;border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:7px;overflow:hidden;box-shadow:0 1px 3px rgba(42,41,99,.06),0 4px 16px rgba(42,41,99,.05);transition:box-shadow .2s}
 .tb:hover{box-shadow:0 4px 16px rgba(42,41,99,.1),0 12px 40px rgba(42,41,99,.08)}
+.tb.tool-completed{background:#f8fafc;border:1px solid rgba(16,185,129,.22);border-left:4px solid #10b981;opacity:.9}
+.tb.tool-completed:hover{box-shadow:0 4px 16px rgba(16,185,129,.1),0 12px 40px rgba(16,185,129,.06)}
+.tb.tool-completed .tne{color:#475569;text-decoration:none}
+.tb.tool-completed .tn{color:#64748b}
 .th{display:grid;grid-template-columns:28px 1fr 60px 150px 120px 110px 26px 26px 44px 16px;align-items:center;gap:7px;padding:.6rem .875rem;cursor:pointer;transition:background .12s}
 .th:hover{background:#F7F6FC}
 .isl{font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;appearance:none;-webkit-appearance:none;border-radius:20px;padding:4px 10px;transition:all .15s;height:28px;vertical-align:middle;box-sizing:border-box}
@@ -1850,7 +1854,7 @@ function renderTools(){
   tools.forEach(function(tool){
     var st=tStat(tool),pct=tPct(tool),tid=tool.id;
     var late=!!(tool.date&&st!=='Completada'&&new Date(tool.date+'T23:59:59')<today);
-    var blk=document.createElement('div');blk.className='tb';blk.id='tb_'+tid;
+    var blk=document.createElement('div');blk.className='tb'+(st==='Completada'?' tool-completed':'');blk.id='tb_'+tid;
     blk.draggable=true;
     blk.setAttribute('data-tid',tid);
     blk.addEventListener('dragstart',function(e){
@@ -1890,8 +1894,9 @@ function renderTools(){
     var allToolsList=pdata().tools;
     var tIdx=allToolsList.findIndex(function(x){return x.id===tool.id;});
     var calcd=calcToolDates(tool, p2?p2.start:'', tIdx>=0?tIdx:0);
-    var endLate=!!(calcd.end&&st!=='Completada'&&new Date(calcd.end+'T23:59:59')<today);
-    hdr.insertAdjacentHTML('beforeend', dInp(calcd.end, endLate, 'iTD(\''+tid+'\',this.value)'));
+    var displayEnd=tool.date||calcd.end;
+    var endLate=!!(displayEnd&&st!=='Completada'&&new Date(displayEnd+'T23:59:59')<today);
+    hdr.insertAdjacentHTML('beforeend', dInp(displayEnd, endLate, 'iTD(\''+tid+'\',this.value)'));
     var eb=document.createElement('button');eb.className='ib';eb.innerHTML='<i class="ti ti-edit"></i>';eb.title='Editar';eb.addEventListener('click',function(e){e.stopPropagation();openMoTool(tid);});hdr.appendChild(eb);
     var db2=document.createElement('button');db2.className='ib';db2.innerHTML='<i class="ti ti-trash"></i>';db2.title='Eliminar';db2.addEventListener('click',function(e){e.stopPropagation();delTool(tid);});hdr.appendChild(db2);
     hdr.insertAdjacentHTML('beforeend','<div class="mp" title="Avance: '+pct+'%"><div class="mf'+(pct===100?' full':'')+'" style="width:'+pct+'%"></div></div>');
@@ -2088,7 +2093,7 @@ function updProjStart(val){
 
 function iGS(tid,val){
   var t=findTool(tid);if(!t)return;
-  t.ganttStart=val;save();renderTools();
+  t.ganttStart=val;save();renderToolsKeepOpen();
 }
 
 // Resetear fechas manuales de todos los proyectos
